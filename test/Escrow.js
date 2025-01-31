@@ -52,12 +52,6 @@ describe('Escrow', () => {
         // approve to transfer token721/real estate from seller to escrow
         approveTransaction = await realEstate.connect(seller).approve(escrow.address, firstTokenId);
         await approveTransaction.wait();
-
-        // transfer token721/real estate from seller to escrow
-        // list token712/real estate for sale
-        listTransaction = await escrow.connect(seller).list(
-            firstTokenId, buyer.address, purchasePrice, escrowAmount);
-        await listTransaction.wait();
     })
 
     describe('Deployment', () => {
@@ -87,6 +81,8 @@ describe('Escrow', () => {
     })
 
     describe('Listing', () => {
+        beforeEach(async () => await listToken(seller));
+
         it('Check ownership', async () => {
             const resultOwner = await realEstate.ownerOf(firstTokenId);
             expect(resultOwner).to.equal(escrow.address);
@@ -119,9 +115,30 @@ describe('Escrow', () => {
         });
     });
 
-    function consoleLog(message) {
+    describe('Listing invalid cases', () => {
+        it('Check non-seller listing', async () => {
+            const revertMessage = "Only seller can call this function";
+            await expect(listToken(buyer)).to.be.revertedWith(revertMessage);
+        });
+
+        it('Check re-listing', async () => {
+            await listToken(seller);
+            const revertMessage = "Already listed";
+            await expect(listToken(seller)).to.be.revertedWith(revertMessage);
+        });
+    });
+
+    async function listToken(_seller) {
+        // transfer token721/real estate from seller to escrow
+        // list token712/real estate for sale
+        const listTransaction = await escrow.connect(_seller).list(
+            firstTokenId, buyer.address, purchasePrice, escrowAmount);
+        await listTransaction.wait();
+    }
+
+    function consoleLog(_message) {
         if (isConsoleLogEnabled) {
-            console.log(message);
+            console.log(_message);
         }
     }
 })

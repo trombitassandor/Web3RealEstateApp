@@ -38,7 +38,9 @@ contract Escrow {
         address _buyer,
         uint256 _purchasePrice,
         uint256 _escrowAmount
-    ) public payable onlySeller {
+    ) public payable onlySeller() {
+        require(!isListed[_tokenId], "Already listed");
+
         // transfer nft from seller to this escrow contract
         // must be approved first
         IERC721(nftAddress).transferFrom(msg.sender, address(this), _tokenId);
