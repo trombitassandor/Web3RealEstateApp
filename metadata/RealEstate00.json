@@ -1,0 +1,33 @@
+{
+    "name": "Real Estate 00",
+    "address": "Address of Real Estate 00",
+    "description": "Real Estate 00 Description",
+    "image": "https://ipfs.io/ipfs/bafybeidfofdnadqm6mww4jzosbezaln3m5b3byc7gh66w3nbm4uffxcvxa/drz-vanoro_6737.jpg",
+    "attributes": [
+      {
+        "trait_type": "Purchase Price",
+        "value": "$112,000"
+      },
+      {
+        "trait_type": "Type of Residence",
+        "value": "Apartments"
+      },
+      {
+        "trait_type": "Bedrooms",
+        "value": "1"
+      },
+      {
+        "trait_type": "Bathrooms",
+        "value": "1"
+      },
+      {
+        "trait_type": "Square Metre",
+        "value": "60 m²"
+      },
+      {
+        "trait_type": "Year Built",
+        "value": "2024"
+      }
+    ]
+  }
+  
