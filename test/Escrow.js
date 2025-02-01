@@ -136,14 +136,26 @@ describe('Escrow', () => {
         });
 
         it('check deposit earnest money revert by non-buyer', async () => {
+            const buyerBalanceBeforeDeposit = await buyer.getBalance();
             await expect(escrowDepositEarnestMoney(seller, escrowAmount))
                 .to.be.revertedWith("Only buyer can call this function");
+            const buyerBalanceAfterDeposit = await buyer.getBalance();
+            const expectedBuyerBalanceAfterDeposit =
+                buyerBalanceBeforeDeposit.sub(escrowAmount);
+            expect(buyerBalanceAfterDeposit)
+                .to.greaterThan(expectedBuyerBalanceAfterDeposit);
         });
 
         it('Check deposit earnest money revert on invalid escrow amount', async () => {
+            const buyerBalanceBeforeDeposit = await buyer.getBalance();
             const invalidEscrowAmount = escrowAmount.sub(1);
             await expect(escrowDepositEarnestMoney(buyer, invalidEscrowAmount))
                 .to.be.revertedWith("Invalid escrow amount");
+            const buyerBalanceAfterDeposit = await buyer.getBalance();
+            const expectedBuyerBalanceAfterDeposit =
+                buyerBalanceBeforeDeposit.sub(invalidEscrowAmount);
+            expect(buyerBalanceAfterDeposit)
+                .to.greaterThan(expectedBuyerBalanceAfterDeposit);
         });
 
         it('Check escrow balance after deposit earnest money', async () => {
@@ -151,15 +163,36 @@ describe('Escrow', () => {
             const resultEscrowBalance = await escrow.getBalance();
             expect(resultEscrowBalance).to.equal(escrowAmount);
         });
+
+        it('Check buyer balance after deposit earnest money', async () => {
+            const buyerBalanceBeforeDeposit = await buyer.getBalance();
+            const tx = await escrowDepositEarnestMoney(buyer, escrowAmount);
+            const buyerBalanceAfterDeposit = await buyer.getBalance();
+            const txGasCost = await getTxGasCost(tx);
+            const expectedBuyerBalanceAfterDeposit =
+                buyerBalanceBeforeDeposit.sub(escrowAmount).sub(txGasCost);
+            expect(buyerBalanceAfterDeposit)
+                .to.equal(expectedBuyerBalanceAfterDeposit);
+        });
     });
 
     describe('Inspection', () => {
         it('Check inspection status update passed by inspector', async () => {
+            let resultIsInspectionPassed;
+            
             await listToken(seller, firstTokenId);
+
             await escrowPassInspection(inspector, firstTokenId);
-            const resultIsInspectionPassed =
+            resultIsInspectionPassed =
                 await escrow.isInspectionPassed(firstTokenId);
+
             expect(resultIsInspectionPassed).to.equal(true);
+
+            await escrowFailInspection(inspector, firstTokenId);
+            resultIsInspectionPassed =
+                await escrow.isInspectionPassed(firstTokenId);
+
+            expect(resultIsInspectionPassed).to.equal(false);
         });
 
         it('Check inspection status of unlisted token', async () => {
@@ -200,18 +233,18 @@ describe('Escrow', () => {
                 .to.be.revertedWith("Already approved by sender");
         });
 
-        async function checkEscrowApproval(){
+        async function checkEscrowApproval() {
             await escrowApproveSale(buyer, firstTokenId);
             await escrowApproveSale(seller, firstTokenId);
             await escrowApproveSale(lender, firstTokenId);
-    
+
             const resultIsApprovedByBuyer =
                 await escrow.approval(firstTokenId, buyer.address);
             const resultIsApprovedBySeller =
                 await escrow.approval(firstTokenId, seller.address);
             const resultIsApprovedByLender =
                 await escrow.approval(firstTokenId, lender.address);
-    
+
             expect(resultIsApprovedByBuyer).to.equal(true);
             expect(resultIsApprovedBySeller).to.equal(true);
             expect(resultIsApprovedByLender).to.equal(true);
@@ -220,29 +253,82 @@ describe('Escrow', () => {
 
     describe('Sale', () => {
         it('Check finalize sale', async () => {
-            await listToken(seller, firstTokenId);
-            await escrowDepositEarnestMoney(buyer, escrowAmount);
-            await escrowPassInspection(inspector, firstTokenId);
-            await escrowApproveSale(buyer, firstTokenId);
-            await escrowApproveSale(seller, firstTokenId);
-            await escrowApproveSale(lender, firstTokenId);
-            await finalizeSale(firstTokenId);
-            // todo
-            // const resultIsSold = await escrow.isSold(firstTokenId);
-            // expect(resultIsSold).to.equal(true);
+            await setupEscrowAndFinalizeSale();
         });
 
-        async function finalizeSale(tokenId) {
-            const transactionFinalizeSale = 
-                await escrow.connect(seller).finalizeSale(tokenId);
-            await transactionFinalizeSale.wait();
-        }
+        it('Check escrow balance after sale', async () => {
+            await setupEscrowAndFinalizeSale();
+            const resultEscrowBalance = await escrow.getBalance();
+            expect(resultEscrowBalance).to.equal(0);
+        });
+
+        it('Check seller balance after sale', async () => {
+            const sellerBalanceBeforeSale = await seller.getBalance();
+            await setupEscrowAndFinalizeSale();
+            const sellerBalanceAfterSale = await seller.getBalance();
+            expect(sellerBalanceAfterSale)
+                .to.greaterThan(sellerBalanceBeforeSale);
+        });
+
+        it('Check buyer balance after sale', async () => {
+            const buyerBalanceBeforeSale = await buyer.getBalance();
+            await setupEscrowAndFinalizeSale();
+            const buyerBalanceAfterSale = await buyer.getBalance();
+            expect(buyerBalanceAfterSale)
+                .to.lessThanOrEqual(
+                    buyerBalanceBeforeSale.sub(escrowAmount));
+        });
+
+        it('Check lender balance after sale', async () => {
+            const lenderBalanceBeforeSale = await lender.getBalance();
+            await setupEscrowAndFinalizeSale();
+            const lenderBalanceAfterSale = await lender.getBalance();
+            expect(lenderBalanceAfterSale)
+                .to.lessThanOrEqual(
+                    lenderBalanceBeforeSale.sub(
+                        purchasePrice.sub(escrowAmount)));
+        });
+
+        it('Check finalize sale revert', async () => {
+            const sellerBalanceBeforeSale = await seller.getBalance();
+            const buyerBalanceBeforeSale = await buyer.getBalance();
+            const lenderBalanceBeforeSale = await lender.getBalance();
+
+            await setupEscrow();
+            await escrowFailInspection(inspector, firstTokenId);
+            await expect(finalizeSale(firstTokenId)).to.be.reverted;
+
+            const sellerBalanceAfterSale = await seller.getBalance();
+            const buyerBalanceAfterSale = await buyer.getBalance();
+            const lenderBalanceAfterSale = await lender.getBalance();
+
+            expect(sellerBalanceAfterSale)
+                .to.greaterThan(sellerBalanceBeforeSale);
+                
+            expect(buyerBalanceAfterSale)
+                .to.lessThanOrEqual(
+                    buyerBalanceBeforeSale.sub(escrowAmount));
+
+            expect(lenderBalanceAfterSale)
+                .to.lessThanOrEqual(
+                    lenderBalanceBeforeSale.sub(
+                        purchasePrice.sub(escrowAmount)));
+        });
     });
 
+    async function getTxGasCost(tx) {
+        const txReceipt = await tx.wait();
+        const gasUsed = txReceipt.gasUsed;
+        const gasPrice = tx.gasPrice;
+        const gasCost = gasUsed.mul(gasPrice);
+        return gasCost;
+    }
+
     async function escrowDepositEarnestMoney(signer, amount) {
-        const transaction = await escrow.connect(signer)
+        const tx = await escrow.connect(signer)
             .depositEarnestMoney(firstTokenId, { value: amount });
-        await transaction.wait();
+        await tx.wait();
+        return tx;
     }
 
     async function listToken(_seller, _tokenId) {
@@ -255,13 +341,48 @@ describe('Escrow', () => {
 
     async function escrowPassInspection(signer, tokenId) {
         const inspectionTransaction = await escrow.connect(signer)
-            .updateInspectionStatus(tokenId, { isInspectionPassed: true });
+            .updateInspectionStatus(tokenId, true);
+        await inspectionTransaction.wait();
+    }
+
+    async function escrowFailInspection(signer, tokenId) {
+        const inspectionTransaction = await escrow.connect(signer)
+            .updateInspectionStatus(tokenId, false);
         await inspectionTransaction.wait();
     }
 
     async function escrowApproveSale(signer, tokenId) {
         const approvalTransaction = await escrow.connect(signer).approveSale(tokenId);
         await approvalTransaction.wait();
+    }
+
+    async function escrowLenderSendTransaction() {
+        const escrowBalance = await escrow.getBalance();
+        const missingBalance = purchasePrice.sub(escrowBalance);
+        const transaction = await lender.sendTransaction(
+            { to: escrow.address, value: missingBalance });
+        await transaction.wait();
+    }
+
+    async function setupEscrowAndFinalizeSale() {
+        await setupEscrow();
+        await finalizeSale(firstTokenId);
+    }
+
+    async function setupEscrow() {
+        await listToken(seller, firstTokenId);
+        await escrowDepositEarnestMoney(buyer, escrowAmount);
+        await escrowPassInspection(inspector, firstTokenId);
+        await escrowApproveSale(buyer, firstTokenId);
+        await escrowApproveSale(seller, firstTokenId);
+        await escrowApproveSale(lender, firstTokenId);
+        await escrowLenderSendTransaction();
+    }
+
+    async function finalizeSale(tokenId) {
+        const transactionFinalizeSale =
+            await escrow.connect(seller).finalizeSale(tokenId);
+        await transactionFinalizeSale.wait();
     }
 
     function consoleLog(_message) {

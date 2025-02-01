@@ -113,12 +113,17 @@ contract Escrow {
         require(approval[_tokenId][buyer[_tokenId]], "Buyer not approved");
         require(approval[_tokenId][seller], "Seller not approved");
         require(approval[_tokenId][lender], "Lender not approved");
+        require(address(this).balance >= purchasePrice[_tokenId], "Insufficient balance");
 
-        // todo
-        // // transfer nft from this escrow contract to buyer
-        // IERC721(nftAddress).transferFrom(address(this), buyer[_tokenId], _tokenId);
+        // transfer nft from this escrow contract to buyer
+        IERC721(nftAddress).transferFrom(address(this), buyer[_tokenId], _tokenId);
 
-        // // transfer purchase price to seller
-        // seller.transfer(purchasePrice[_tokenId]);
+        // transfer purchase price to seller
+        // safer and more readable
+        seller.transfer(purchasePrice[_tokenId]);
+
+        // more gas efficient
+        // (bool success, ) = payable(seller).call{value: purchasePrice[_tokenId]}("");
+        // require(success, "Transfer failed");
     }
 }
