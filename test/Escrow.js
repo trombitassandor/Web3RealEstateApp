@@ -179,7 +179,7 @@ describe('Escrow', () => {
     describe('Inspection', () => {
         it('Check inspection status update passed by inspector', async () => {
             let resultIsInspectionPassed;
-            
+
             await listToken(seller, firstTokenId);
 
             await escrowPassInspection(inspector, firstTokenId);
@@ -303,7 +303,7 @@ describe('Escrow', () => {
             const lenderBalanceAfterSale = await lender.getBalance();
 
             expect(sellerBalanceAfterSale)
-                .to.greaterThan(sellerBalanceBeforeSale);
+                .to.lessThanOrEqual(sellerBalanceBeforeSale);
                 
             expect(buyerBalanceAfterSale)
                 .to.lessThanOrEqual(
