@@ -1,0 +1,33 @@
+{
+    "name": "Real Estate 01",
+    "address": "Address of Real Estate 01",
+    "description": "Real Estate 01 Description",
+    "image": "https://ipfs.io/ipfs/bafybeiaws3igyno2tb2duo6tvulnlzhywhwbqjuouc4xfxi5i7td7fzqku/images.jpeg",
+    "attributes": [
+      {
+        "trait_type": "Purchase Price",
+        "value": "$175,000"
+      },
+      {
+        "trait_type": "Type of Residence",
+        "value": "House"
+      },
+      {
+        "trait_type": "Bedrooms",
+        "value": "3"
+      },
+      {
+        "trait_type": "Bathrooms",
+        "value": "2"
+      },
+      {
+        "trait_type": "Square Metre",
+        "value": "100 m²"
+      },
+      {
+        "trait_type": "Year Built",
+        "value": "2025"
+      }
+    ]
+  }
+  
