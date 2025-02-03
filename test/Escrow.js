@@ -81,7 +81,7 @@ describe('Escrow', () => {
     })
 
     describe('Listing', () => {
-        beforeEach(async () => await listToken(seller, firstTokenId));
+        beforeEach(async () => await escrowListToken(seller, firstTokenId));
 
         it('Check ownership', async () => {
             const resultOwner = await realEstate.ownerOf(firstTokenId);
@@ -117,19 +117,19 @@ describe('Escrow', () => {
 
     describe('Listing invalid cases', () => {
         it('Check non-seller listing', async () => {
-            await expect(listToken(buyer, firstTokenId))
+            await expect(escrowListToken(buyer, firstTokenId))
                 .to.be.revertedWith("Only seller can call this function");
         });
 
         it('Check re-listing', async () => {
-            await listToken(seller, firstTokenId);
-            await expect(listToken(seller, firstTokenId))
+            await escrowListToken(seller, firstTokenId);
+            await expect(escrowListToken(seller, firstTokenId))
                 .to.be.revertedWith("Already listed");
         });
     });
 
     describe('Deposit Earnest Money', () => {
-        beforeEach(async () => await listToken(seller, firstTokenId));
+        beforeEach(async () => await escrowListToken(seller, firstTokenId));
 
         it('Check deposit earnest money', async () => {
             await escrowDepositEarnestMoney(buyer, escrowAmount);
@@ -180,7 +180,7 @@ describe('Escrow', () => {
         it('Check inspection status update passed by inspector', async () => {
             let resultIsInspectionPassed;
 
-            await listToken(seller, firstTokenId);
+            await escrowListToken(seller, firstTokenId);
 
             await escrowPassInspection(inspector, firstTokenId);
             resultIsInspectionPassed =
@@ -201,7 +201,7 @@ describe('Escrow', () => {
         });
 
         it('Check inspection status update revert by non-inspector', async () => {
-            await listToken(seller, firstTokenId);
+            await escrowListToken(seller, firstTokenId);
             await expect(escrowPassInspection(seller, firstTokenId))
                 .to.be.revertedWith("Only inspector can call this function");
             const resultIsInspectionPassed =
@@ -212,7 +212,7 @@ describe('Escrow', () => {
 
     describe('Approval', () => {
         it('Check approvals (buyer, seller, lender)', async () => {
-            listToken(seller, firstTokenId);
+            escrowListToken(seller, firstTokenId);
             checkEscrowApproval();
         });
 
@@ -221,13 +221,13 @@ describe('Escrow', () => {
         });
 
         it('Check approval revert of non-buyer, non-seller, non-lender', async () => {
-            listToken(seller, firstTokenId);
+            escrowListToken(seller, firstTokenId);
             await expect(escrowApproveSale(inspector, firstTokenId))
                 .to.be.revertedWith("Only buyer, seller, or lender can call this function");
         });
 
         it('Check redundant approval revert', async () => {
-            listToken(seller, firstTokenId);
+            escrowListToken(seller, firstTokenId);
             await escrowApproveSale(buyer, firstTokenId);
             await expect(escrowApproveSale(buyer, firstTokenId))
                 .to.be.revertedWith("Already approved by sender");
@@ -446,7 +446,7 @@ describe('Escrow', () => {
         return tx;
     }
 
-    async function listToken(_seller, _tokenId) {
+    async function escrowListToken(_seller, _tokenId) {
         // transfer token721/real estate from seller to escrow
         // list token712/real estate for sale
         const listTransaction = await escrow.connect(_seller).list(
@@ -485,7 +485,7 @@ describe('Escrow', () => {
     }
 
     async function setupEscrow() {
-        await listToken(seller, firstTokenId);
+        await escrowListToken(seller, firstTokenId);
         await escrowDepositEarnestMoney(buyer, escrowAmount);
         await escrowPassInspection(inspector, firstTokenId);
         await escrowApproveSale(buyer, firstTokenId);
