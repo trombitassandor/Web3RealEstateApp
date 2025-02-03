@@ -2,17 +2,17 @@
 pragma solidity ^0.8.0;
 
 interface IERC721 {
-    function transferFrom(address _from, address _to, uint256 _id) external;
+    function transferFrom(address _from, address _receiver, uint256 _id) external;
 }
 
 contract Escrow {
     address public nftAddress;
     address payable public seller;
     address public inspector;
-    address public lender;
+    address payable public lender;
 
     mapping(uint256 => bool) public isListed;
-    mapping(uint256 => address) public buyer;
+    mapping(uint256 => address payable) public buyer;
     mapping(uint256 => uint256) public purchasePrice;
     mapping(uint256 => uint256) public escrowAmount;
     mapping(uint256 => bool) public isInspectionPassed;
@@ -52,7 +52,7 @@ contract Escrow {
         address _nftAddress,
         address payable _seller,
         address _inspector,
-        address _lender
+        address payable _lender
     ) {
         nftAddress = _nftAddress;
         seller = _seller;
@@ -68,7 +68,7 @@ contract Escrow {
 
     function list(
         uint256 _tokenId,
-        address _buyer,
+        address payable _buyer,
         uint256 _purchasePrice,
         uint256 _escrowAmount)
     public payable onlySeller() {
@@ -107,23 +107,59 @@ contract Escrow {
     // if lender approved
     // then transfer nft to buyer
     // then purchase price to seller
-    function finalizeSale(uint256 _tokenId) public 
-    onlyListed(_tokenId) {
+    function finalizeSale(uint256 _tokenId) 
+    public onlyListed(_tokenId) {
         require(isInspectionPassed[_tokenId], "Inspection not passed");
         require(approval[_tokenId][buyer[_tokenId]], "Buyer not approved");
         require(approval[_tokenId][seller], "Seller not approved");
         require(approval[_tokenId][lender], "Lender not approved");
         require(address(this).balance >= purchasePrice[_tokenId], "Insufficient balance");
 
-        // transfer nft from this escrow contract to buyer
-        IERC721(nftAddress).transferFrom(address(this), buyer[_tokenId], _tokenId);
+        transferTo(seller, purchasePrice[_tokenId]);
+        transferNftTo(buyer[_tokenId], _tokenId);
+        isListed[_tokenId] = false;
+    }
 
-        // transfer purchase price to seller
+    function cancelSale(uint256 _tokenId) 
+    public onlyListed(_tokenId) onlyApprovalParties(_tokenId){
+        isListed[_tokenId] = false;
+
+        if(getBalance() == 0) {
+            return;
+        }
+
+        uint256 lendedAmount = 
+            purchasePrice[_tokenId] - escrowAmount[_tokenId];
+
+        if(lendedAmount > 0) {
+            transferTo(lender, lendedAmount);
+        }
+
+        bool isSellerError = 
+            msg.sender == seller ||
+            isInspectionPassed[_tokenId] == false;
+        
+        uint256 remainedBalance = getBalance();
+
+        if (isSellerError) {
+            transferTo(buyer[_tokenId], remainedBalance);
+        } else {
+            transferTo(seller, remainedBalance);
+        }
+
+        // option: return lender deposit
+    }
+
+    function transferTo(address payable _receiver, uint256 amount) private {
         // safer and more readable
-        seller.transfer(purchasePrice[_tokenId]);
+        _receiver.transfer(amount);
 
         // more gas efficient
-        // (bool success, ) = payable(seller).call{value: purchasePrice[_tokenId]}("");
+        // (bool success, ) = _receiver.call{value: amount}("");
         // require(success, "Transfer failed");
+    }
+
+    function transferNftTo(address _receiver, uint256 _tokenId) private {
+        IERC721(nftAddress).transferFrom(address(this), _receiver, _tokenId);
     }
 }

@@ -314,6 +314,121 @@ describe('Escrow', () => {
                     lenderBalanceBeforeSale.sub(
                         purchasePrice.sub(escrowAmount)));
         });
+
+        it('Check change of ownership to buyer after sale', async () => {
+            await setupEscrowAndFinalizeSale();
+            const resultOwner = await realEstate.ownerOf(firstTokenId);
+            expect(resultOwner).to.equal(buyer.address);
+        });
+
+        it('Check listed status is false/unlisted after sale', async () => {
+            await setupEscrowAndFinalizeSale();
+            const resultIsListed = await escrow.isListed(firstTokenId);
+            expect(resultIsListed).to.equal(false);
+        });
+    });
+
+    describe('Cancel Sale', () => {
+        it('Check unlisting', async () => {
+            await setupEscrow(seller, firstTokenId);
+            await escrowCancelSale(seller);
+            const resultIsListed = await escrow.isListed(firstTokenId);
+            expect(resultIsListed).to.equal(false);
+        });
+
+        it('Check unlisting revert by non-party', async () => {
+            await setupEscrow(seller, firstTokenId);
+            await expect(escrow.connect(inspector).cancelSale(firstTokenId))
+                .to.be.revertedWith("Only buyer, seller, or lender can call this function");
+            expect(await escrow.isListed(firstTokenId)).to.equal(true);
+        });
+
+        it('Check unlisting revert on unlisted token', async () => {
+            await expect(escrow.connect(seller).cancelSale(firstTokenId))
+                .to.be.revertedWith("Not listed");
+        });
+
+        it('Check cancel sale by seller', async () => {
+            await setupEscrow(seller, firstTokenId);
+            const buyerBalanceBeforeCancelSale = await buyer.getBalance();
+            const lenderBalanceBeforeCancelSale = await lender.getBalance();
+            await escrowCancelSale(seller);
+            const buyerBalanceAfterCancelSale = await buyer.getBalance();
+            const lenderBalanceAfterCancelSale = await lender.getBalance();
+            const escrowBalanceAfterCancelSale = await escrow.getBalance();
+            expect(buyerBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(buyerBalanceBeforeCancelSale);
+            expect(lenderBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(lenderBalanceBeforeCancelSale);
+            expect(escrowBalanceAfterCancelSale)
+                .to.equal(0);
+        });
+
+        it('Check cancel sale by buyer', async () => {
+            await setupEscrow(seller, firstTokenId);
+            const sellerBalanceBeforeCancelSale = await seller.getBalance();
+            const lenderBalanceBeforeCancelSale = await lender.getBalance();
+            await escrowCancelSale(buyer);
+            const sellerBalanceAfterCancelSale = await seller.getBalance();
+            const lenderBalanceAfterCancelSale = await lender.getBalance();
+            const escrowBalanceAfterCancelSale = await escrow.getBalance();
+            expect(sellerBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(sellerBalanceBeforeCancelSale);
+            expect(lenderBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(lenderBalanceBeforeCancelSale);
+            expect(escrowBalanceAfterCancelSale)
+                .to.equal(0);
+        });
+
+        it('Check cancel sale by lender', async () => {
+            await setupEscrow(seller, firstTokenId);
+            const sellerBalanceBeforeCancelSale = await seller.getBalance();
+            const lenderBalanceBeforeCancelSale = await lender.getBalance();
+            await escrowCancelSale(lender);
+            const sellerBalanceAfterCancelSale = await seller.getBalance();
+            const lenderBalanceAfterCancelSale = await lender.getBalance();
+            const escrowBalanceAfterCancelSale = await escrow.getBalance();
+            expect(sellerBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(sellerBalanceBeforeCancelSale);
+            expect(lenderBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(lenderBalanceBeforeCancelSale);
+            expect(escrowBalanceAfterCancelSale)
+                .to.equal(0);
+        });
+
+        it('Check cancel sale by buyer but failed inspection', async () => {
+            await setupEscrow(seller, firstTokenId);
+            await escrowFailInspection(inspector, firstTokenId);
+            const buyerBalanceBeforeCancelSale = await buyer.getBalance();
+            const lenderBalanceBeforeCancelSale = await lender.getBalance();
+            await escrowCancelSale(buyer);
+            const buyerBalanceAfterCancelSale = await buyer.getBalance();
+            const lenderBalanceAfterCancelSale = await lender.getBalance();
+            const escrowBalanceAfterCancelSale = await escrow.getBalance();
+            expect(buyerBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(buyerBalanceBeforeCancelSale);
+            expect(lenderBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(lenderBalanceBeforeCancelSale);
+            expect(escrowBalanceAfterCancelSale)
+                .to.equal(0);
+        });
+
+        it('Check cancel sale by lender but failed inspection', async () => {
+            await setupEscrow(seller, firstTokenId);
+            await escrowFailInspection(inspector, firstTokenId);
+            const buyerBalanceBeforeCancelSale = await buyer.getBalance();
+            const lenderBalanceBeforeCancelSale = await lender.getBalance();
+            await escrowCancelSale(lender);
+            const buyerBalanceAfterCancelSale = await buyer.getBalance();
+            const lenderBalanceAfterCancelSale = await lender.getBalance();
+            const escrowBalanceAfterCancelSale = await escrow.getBalance();
+            expect(buyerBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(buyerBalanceBeforeCancelSale);
+            expect(lenderBalanceAfterCancelSale)
+                .to.greaterThanOrEqual(lenderBalanceBeforeCancelSale);
+            expect(escrowBalanceAfterCancelSale)
+                .to.equal(0);
+        });
     });
 
     async function getTxGasCost(tx) {
@@ -383,6 +498,11 @@ describe('Escrow', () => {
         const transactionFinalizeSale =
             await escrow.connect(seller).finalizeSale(tokenId);
         await transactionFinalizeSale.wait();
+    }
+
+    async function escrowCancelSale(_signer) {
+        var cancelSaleTx = await escrow.connect(_signer).cancelSale(firstTokenId);
+        await cancelSaleTx.wait();
     }
 
     function consoleLog(_message) {
