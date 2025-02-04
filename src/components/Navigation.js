@@ -1,10 +1,10 @@
 import logo from '../assets/logo.svg';
+import EthersUtils from '../utils/EthersUtils';
 
 const Navigation = ({ account, setAccount }) => {
     const connectHandler = async () => {
-        const accounts = await window.ethereum.request(
-            { method: 'eth_requestAccounts' });
-        setAccount(accounts[0]);
+        const account = await EthersUtils.requestAccount();
+        setAccount(account);
     }
 
     const disconnectHandler = async () => {

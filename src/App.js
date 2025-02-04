@@ -13,6 +13,8 @@ import Escrow from './abis/Escrow.json'
 // Config
 import config from './config.json';
 
+import EthersUtils from './utils/EthersUtils';
+
 function App() {
 
   const [account, setAccount] = useState(null);
@@ -20,6 +22,12 @@ function App() {
   const loadBlockchainData = async () => {
     const provider =
       new ethers.providers.Web3Provider(window.ethereum);
+    
+    window.ethereum.on('accountsChanged', async () => {
+      const accountAddress = 
+        await EthersUtils.RequestAccountAddress();
+      setAccount(accountAddress);
+    });
   };
 
   useEffect(() => {
