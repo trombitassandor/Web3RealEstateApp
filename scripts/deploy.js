@@ -31,8 +31,8 @@ async function mintAllRealEstateTokens(realEstate, seller) {
   console.log("Start minting real estate tokens");
 
   const allRealEstateTokenURI = [
-    "https://ipfs.io/ipfs/bafybeignot2h6boaci4eqer6irzibmv3xn6qcfzmeyszddnyus5fowbtgu/RealEstate00.json",
-    "https://ipfs.io/ipfs/bafybeigp5mi4qfos2oevvhdrfkxbvie7zf5ca25hvvn7rzicuory4edfhe/RealEstate01.json",
+    "https://bafybeiawvmwsgpf57toqhaj2gwjgnbkivppjhahb34wmwm4j3thvnmhvja.ipfs.w3s.link/RealEstate00.json",
+    "https://bafybeidlhdlzkxj7rjcccjlgvtuy2n4tblexja4mgm7xqjuk3yzouilf5y.ipfs.w3s.link/RealEstate01.json",
   ];
 
   for (const realEstateTokenURI of allRealEstateTokenURI) {
