@@ -222,9 +222,9 @@ header {
 }
 
 /* ------------------------------------------------------ */
-/* -- HOMES -- */
+/* -- Real Estates -- */
 
-.home {
+.realEstate {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.7);
@@ -235,7 +235,7 @@ header {
   transform: translate(-50%, -50%);
 }
 
-.home__details {
+.realEstate__details {
   display: grid;
   /* grid-template-columns: repeat(2, 1fr); */
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
@@ -255,16 +255,16 @@ header {
   background: var(--clr-white);
 }
 
-.home__image {
+.realEstate__image {
   max-width: 500px;
   margin: 20px auto;
 }
 
-.home__image img {
+.realEstate__image img {
   max-width: 100%;
 }
 
-.home__close {
+.realEstate__close {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -278,12 +278,12 @@ header {
   cursor: pointer;
 }
 
-.home__close img {
+.realEstate__close img {
   width: 25px;
   height: 25px;
 }
 
-.home__overview {
+.realEstate__overview {
   height: 100%;
   margin: 0 20px;
   padding-right: 40px;
@@ -291,19 +291,19 @@ header {
   overflow-y: scroll;
 }
 
-.home__overview h1,
-.home__overview h2,
-.home__overview hr {
+.realEstate__overview h1,
+.realEstate__overview h2,
+.realEstate__overview hr {
   margin: 10px auto;
 }
 
-.home__overview ul {
+.realEstate__overview ul {
   margin-left: 40px;
 }
 
-.home__buy,
-.home__contact,
-.home__owned {
+.realEstate__buy,
+.realEstate__contact,
+.realEstate__owned {
   margin: 20px 5px;
 
   background-color: var(--clr-blue);
@@ -320,16 +320,16 @@ header {
   transition: all 250ms ease;
 }
 
-.home__buy {
+.realEstate__buy {
   width: 225px;
   height: 50px;
 }
 
-.home__buy:hover {
+.realEstate__buy:hover {
   background-color: var(--clr-blue-2);
 }
 
-.home__contact {
+.realEstate__contact {
   width: 150px;
   height: 50px;
 
@@ -339,12 +339,12 @@ header {
   border: 1px solid var(--clr-blue);
 }
 
-.home__contact:hover {
+.realEstate__contact:hover {
   background-color: #f7f7f7;
   color: var(--clr-blue-2);
 }
 
-.home__owned {
+.realEstate__owned {
   height: 50px;
   background-color: var(--clr-green);
 

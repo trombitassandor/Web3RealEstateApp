@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 
 import close from '../assets/close.svg';
 
-const Home = ({ home, provider, escrow, togglePop }) => {
+const RealEstate = ({ realEstate, provider, escrow, togglePop }) => {
 
     return (
-        <div className="home">
+        <div className="realEstate">
         </div>
     );
 }
 
-export default Home;
+export default RealEstate;

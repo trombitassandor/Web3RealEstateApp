@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 // Components
 import Navigation from './components/Navigation';
 import Search from './components/Search';
-import Home from './components/Home';
+import RealEstate from './components/RealEstate';
 
 // ABIs
 import RealEstateABI from './abis/RealEstate.json'
@@ -20,6 +20,7 @@ function App() {
   const [account, setAccount] = useState(null);
   const [escrow, setEscrow] = useState(null);
   const [allRealEstates, setAllReatEstates] = useState([]);
+  const [currentRealEstate, setCurrentRealEstate] = useState(null);
 
   const loadBlockchainData = async () => {
     const provider =
@@ -71,6 +72,11 @@ function App() {
     loadBlockchainData();
   }, []);
 
+  const showRealEstate = (realEstate) => {
+    console.log("showRealEstate", realEstate);
+    setCurrentRealEstate(realEstate);
+  };
+
   return (
     <div>
       <Navigation account={account} setAccount={setAccount} />
@@ -81,7 +87,7 @@ function App() {
         <div className='cards'>
           {
             allRealEstates.map((realEstate, index) => (
-              <div className='card' key={index}>
+              <div className='card' key={index} onClick={() => showRealEstate(realEstate)}>
                 <div className='card__image'>
                   <img src={realEstate.image} alt="RealEstate" />
                 </div>
@@ -109,6 +115,9 @@ function App() {
           }
         </div>
       </div>
+      {
+        currentRealEstate != null && (<RealEstate />)
+      }
     </div>
   );
 }
