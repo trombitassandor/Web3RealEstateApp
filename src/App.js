@@ -21,6 +21,7 @@ function App() {
   const [escrow, setEscrow] = useState(null);
   const [allRealEstates, setAllReatEstates] = useState([]);
   const [currentRealEstate, setCurrentRealEstate] = useState(null);
+  const [toggle, setToggle] = useState(false);
 
   const loadBlockchainData = async () => {
     const provider =
@@ -72,9 +73,10 @@ function App() {
     loadBlockchainData();
   }, []);
 
-  const showRealEstate = (realEstate) => {
-    console.log("showRealEstate", realEstate);
+  const toggleRealEstate = (realEstate) => {
+    console.log("toggleRealEstate", realEstate);
     setCurrentRealEstate(realEstate);
+    setToggle(!toggle);
   };
 
   return (
@@ -87,7 +89,7 @@ function App() {
         <div className='cards'>
           {
             allRealEstates.map((realEstate, index) => (
-              <div className='card' key={index} onClick={() => showRealEstate(realEstate)}>
+              <div className='card' key={index} onClick={() => toggleRealEstate(realEstate)}>
                 <div className='card__image'>
                   <img src={realEstate.image} alt="RealEstate" />
                 </div>
@@ -116,7 +118,13 @@ function App() {
         </div>
       </div>
       {
-        currentRealEstate != null && (<RealEstate />)
+        toggle && <RealEstate
+          realEstate={currentRealEstate}
+          provider={provider}
+          account={account}
+          escrow={escrow}
+          onClose={toggleRealEstate}
+        />
       }
     </div>
   );
