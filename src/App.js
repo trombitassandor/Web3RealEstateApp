@@ -14,6 +14,7 @@ import EscrowABI from './abis/Escrow.json'
 import config from './config.json';
 
 import EthersUtils from './utils/EthersUtils';
+import RealEstateUtils from './utils/RealEstateUtils';
 
 function App() {
   const [provider, setProvider] = useState(null);
@@ -91,25 +92,28 @@ function App() {
             allRealEstates.map((realEstate, index) => (
               <div className='card' key={index} onClick={() => toggleRealEstate(realEstate)}>
                 <div className='card__image'>
-                  <img src={realEstate.image} alt="RealEstate" />
+                  <img src={RealEstateUtils.getImage(realEstate)} alt="RealEstate" />
                 </div>
                 <div className="card__info">
-                  <h4>{GetPurchasePrice(realEstate)}|{realEstate.name}</h4>
+                  <h4>
+                    {RealEstateUtils.getPurchasePrice(realEstate)}|
+                    {RealEstateUtils.getName(realEstate)}
+                  </h4>
                   <h5>
                     <p>
-                      <strong>{GetYearBuilt(realEstate)} | </strong>
-                      <strong>{GetSquareMetre(realEstate)} | </strong>
-                      <strong>{GetBedrooms(realEstate)}</strong> bedrooms |
-                      <strong>{GetBathrooms(realEstate)}</strong> bathrooms
+                      <strong>{RealEstateUtils.getYearBuilt(realEstate)} | </strong>
+                      <strong>{RealEstateUtils.getSquareMetre(realEstate)} | </strong>
+                      <strong>{RealEstateUtils.getBedrooms(realEstate)}</strong> bedrooms |
+                      <strong>{RealEstateUtils.getBathrooms(realEstate)}</strong> bathrooms
                     </p>
                   </h5>
                   <p>
                     <strong>Address | </strong>
-                    {realEstate.address}
+                    {RealEstateUtils.getAddress(realEstate)}
                   </p>
                   <p>
                     <strong>Description | </strong>
-                    {realEstate.description}
+                    {RealEstateUtils.getDescription(realEstate)}
                   </p>
                 </div>
               </div>
@@ -128,32 +132,6 @@ function App() {
       }
     </div>
   );
-}
-
-function GetPurchasePrice(realEstate) {
-  return FindAttributeValue(realEstate, 'Purchase Price');
-}
-
-function GetBedrooms(realEstate) {
-  return FindAttributeValue(realEstate, 'Bedrooms');
-}
-
-function GetBathrooms(realEstate) {
-  return FindAttributeValue(realEstate, 'Bathrooms');
-}
-
-function GetSquareMetre(realEstate) {
-  return FindAttributeValue(realEstate, 'Square Metre');
-}
-
-function GetYearBuilt(realEstate) {
-  return FindAttributeValue(realEstate, 'Year Built');
-}
-
-function FindAttributeValue(metadata, attributeType) {
-  let attribute = metadata.attributes.find(attr =>
-    attr.trait_type === attributeType)
-  return attribute?.value;
 }
 
 export default App;
