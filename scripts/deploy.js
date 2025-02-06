@@ -97,6 +97,7 @@ async function listAllRealEstateTokens(escrow, seller, buyer, allRealEstateToken
     await tx.wait();
 
     console.log("Listed real estate token with id:", realEstateTokenId);
+    console.log("Listed real estate token with buyer:", buyer.address);
   }
 }
 

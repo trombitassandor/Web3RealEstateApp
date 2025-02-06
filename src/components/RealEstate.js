@@ -4,7 +4,73 @@ import { useEffect, useState } from 'react';
 import close from '../assets/close.svg';
 import RealEstateUtils from '../utils/RealEstateUtils';
 
-const RealEstate = ({ realEstate, provider, escrow, onClose }) => {
+const RealEstate = ({ realEstate, realEstateId, provider, escrow, onClose }) => {
+
+    const [buyer, setBuyer] = useState(null);
+    const [seller, setSeller] = useState(null);
+    const [inspector, setInspector] = useState(null);
+    const [lender, setLender] = useState(null);
+
+    const [hasBought, setHasBought] = useState(null);
+    const [hasInspected, setHasInspected] = useState(null);
+    const [hasLended, setHasLended] = useState(null);
+    const [hasSold, setHasSold] = useState(null);
+
+    const [owner, setOwner] = useState(null);
+
+    const fetchDetails = async() => {
+        console.log("fetchDetails");
+        console.log("realEstate =", realEstate);
+        console.log("realEstateId =", realEstateId);
+        
+        const buyer = await escrow.buyer(realEstateId);
+        setBuyer(buyer);
+        console.log("buyer =", buyer);
+
+        const seller = await escrow.seller();
+        setSeller(seller);
+        console.log("seller =", seller);
+
+        const inspector = await escrow.inspector();
+        setInspector(inspector);
+        console.log("inspector =", inspector);
+
+        const lender = await escrow.lender();
+        setLender(lender);
+        console.log("lender =", lender);
+
+        const hasSold = await escrow.approval(realEstateId, seller);
+        setHasSold(hasSold);
+        console.log("hasSold =", hasSold);
+
+        const hasInspected = await escrow.isInspectionPassed(realEstateId);
+        setHasInspected(hasInspected);
+        console.log("hasInspected =", hasInspected);
+
+        const hasLended = await escrow.approval(realEstateId, lender);
+        setHasLended(hasLended);
+        console.log("hasLended =", hasLended);
+    }
+
+    const fetchOwner = async() => {
+        console.log("fetchOwner");
+
+        const isListed = await escrow.isListed(realEstateId);
+        console.log("isListed =", isListed);
+        
+        if (isListed) return;
+
+        const owner = await escrow.buyer(realEstateId);
+        setOwner(owner);
+
+        console.log("owner =", owner);
+    }
+
+    // call again on hasSold changed
+    useEffect(() => {
+        fetchDetails();
+        fetchOwner();
+      }, [hasSold]);
 
     return (
         <div className="realEstate">
