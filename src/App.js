@@ -66,7 +66,7 @@ function App() {
 
     window.ethereum.on('accountsChanged', async () => {
       const accountAddress =
-        await EthersUtils.RequestAccountAddress();
+        await EthersUtils.requestAccountAddress();
       setAccount(accountAddress);
     });
   };
@@ -92,7 +92,7 @@ function App() {
         <div className='cards'>
           {
             allRealEstates.map((realEstate, id) => (
-              <div className='card' key={id} onClick={() => toggleRealEstate(realEstate, id)}>
+              <div className='card' key={id + 1} onClick={() => toggleRealEstate(realEstate, id + 1)}>
                 <div className='card__image'>
                   <img src={RealEstateUtils.getImage(realEstate)} alt="RealEstate" />
                 </div>

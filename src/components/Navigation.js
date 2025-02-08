@@ -3,12 +3,14 @@ import EthersUtils from '../utils/EthersUtils';
 
 const Navigation = ({ account, setAccount }) => {
     const connectHandler = async () => {
-        const account = await EthersUtils.requestAccount();
+        const account = await EthersUtils.requestAccountAddress();
         setAccount(account);
+        console.log("setAccount=", account);
     }
 
     const disconnectHandler = async () => {
         setAccount(null);
+        console.log("setAccount=", null);
     }
 
     return (
@@ -31,9 +33,7 @@ const Navigation = ({ account, setAccount }) => {
                             type="button"
                             className="nav__connect"
                         >
-                            {account.slice(0, 6) +
-                                '...' +
-                                account.slice(38, 42)}
+                            {EthersUtils.getSlicedAccountAddress(account)}
                         </button>
 
                         <button

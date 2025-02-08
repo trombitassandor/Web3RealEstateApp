@@ -13,11 +13,17 @@ class EthersUtils {
         return account;
     }
 
-    static async RequestAccountAddress() {
+    static async requestAccountAddress() {
         const account = await this.requestAccount();
         const accountAddress =
             ethers.utils.getAddress(account);
         return accountAddress;
+    }
+
+    static getSlicedAccountAddress(account) {
+        return account.slice(0, 6) +
+            '...' +
+            account.slice(38, 42);
     }
 }
 

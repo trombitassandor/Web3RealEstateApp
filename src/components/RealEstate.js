@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 
 import close from '../assets/close.svg';
 import RealEstateUtils from '../utils/RealEstateUtils';
+import EthersUtils from '../utils/EthersUtils';
 
-const RealEstate = ({ realEstate, realEstateId, provider, escrow, onClose }) => {
-
+const RealEstate = ({ realEstate, realEstateId, provider, account, escrow, onClose }) => {
     const [buyer, setBuyer] = useState(null);
     const [seller, setSeller] = useState(null);
     const [inspector, setInspector] = useState(null);
@@ -18,11 +18,9 @@ const RealEstate = ({ realEstate, realEstateId, provider, escrow, onClose }) => 
 
     const [owner, setOwner] = useState(null);
 
-    const fetchDetails = async() => {
+    const fetchDetails = async () => {
         console.log("fetchDetails");
-        console.log("realEstate =", realEstate);
-        console.log("realEstateId =", realEstateId);
-        
+
         const buyer = await escrow.buyer(realEstateId);
         setBuyer(buyer);
         console.log("buyer =", buyer);
@@ -39,6 +37,10 @@ const RealEstate = ({ realEstate, realEstateId, provider, escrow, onClose }) => 
         setLender(lender);
         console.log("lender =", lender);
 
+        const hasBought = await escrow.approval(realEstateId, buyer);
+        setHasBought(hasBought);
+        console.log("hasBought =", hasBought);
+
         const hasSold = await escrow.approval(realEstateId, seller);
         setHasSold(hasSold);
         console.log("hasSold =", hasSold);
@@ -52,12 +54,12 @@ const RealEstate = ({ realEstate, realEstateId, provider, escrow, onClose }) => 
         console.log("hasLended =", hasLended);
     }
 
-    const fetchOwner = async() => {
+    const fetchOwner = async () => {
         console.log("fetchOwner");
 
         const isListed = await escrow.isListed(realEstateId);
         console.log("isListed =", isListed);
-        
+
         if (isListed) return;
 
         const owner = await escrow.buyer(realEstateId);
@@ -66,11 +68,79 @@ const RealEstate = ({ realEstate, realEstateId, provider, escrow, onClose }) => 
         console.log("owner =", owner);
     }
 
+    const buyHandler = async () => {
+        const escrowAmount = await escrow.escrowAmount(realEstateId);
+        const signer = await provider.getSigner();
+
+        console.log("escrowAmount=", escrowAmount)
+        console.log("signer=", signer)
+
+        let tx = await escrow.connect(signer).depositEarnestMoney(
+            realEstateId, { value: escrowAmount, gasLimit: 60000 });
+        await tx.wait();
+
+        tx = await escrow.connect(signer).approveSale(realEstateId);
+        await tx.wait();
+
+        setHasBought(true);
+
+        console.log("hasBought=", hasBought);
+    }
+
+    const inspectHandler = async () => {
+        const signer = await provider.getSigner();
+
+        let tx = await escrow.connect(signer)
+            .updateInspectionStatus(realEstateId, true);
+        await tx.wait();
+
+        setHasInspected(true);
+    }
+
+    const lendHandler = async () => {
+        const signer = await provider.getSigner();
+
+        let tx = await escrow.connect(signer).approveSale(realEstateId);
+        await tx.wait();
+
+        const purchasePrice = await escrow.purchasePrice(realEstateId);
+        const escrowAmount = await escrow.escrowAmount(realEstateId);
+        const lendAmount = purchasePrice - escrowAmount;
+
+        await signer.sendTransaction(
+            {
+                to: escrow.address,
+                value: lendAmount.toString(),
+                gasLimit: 60000
+            }
+        );
+
+        setHasLended(true);
+    }
+
+    const sellHandler = async () => {
+        const signer = await provider.getSigner();
+
+        let tx = await escrow.connect(signer).approveSale(realEstateId);
+        await tx.wait();
+
+        tx = await escrow.connect(signer).finalizeSale(realEstateId);
+        await tx.wait();
+
+        setHasSold(true);
+    }
+
     // call again on hasSold changed
     useEffect(() => {
         fetchDetails();
         fetchOwner();
-      }, [hasSold]);
+    }, [hasSold]);
+
+    useEffect(() => {
+        console.log("realEstate =", realEstate);
+        console.log("realEstateId =", realEstateId);
+        console.log("account =", account);
+    }, []);
 
     return (
         <div className="realEstate">
@@ -94,13 +164,39 @@ const RealEstate = ({ realEstate, realEstateId, provider, escrow, onClose }) => 
                     <p><strong>Address</strong></p>
                     <p>{RealEstateUtils.getAddress(realEstate)}</p>
 
-                    <button className='realEstate__buy'>
-                        Buy
-                    </button>
+                    {owner ? (
+                        <div className='realEstate__owned'>
+                            Owned by {EthersUtils.getSlicedAccountAddress(owner)}
+                        </div>
+                    ) : (
+                        <div>
+                            {(account === inspector) ? (
+                                <button className='realEstate__buy'
+                                    onClick={inspectHandler} disabled={hasInspected}>
+                                    Approve Inspection
+                                </button>
+                            ) : (account === lender) ? (
+                                <button className='realEstate__buy'
+                                    onClick={lendHandler} disabled={hasLended}>
+                                    Approve & Lend
+                                </button>
+                            ) : (account === seller) ? (
+                                <button className='realEstate__buy'
+                                    onClick={sellHandler} disabled={hasSold}>
+                                    Approve & Sell
+                                </button>
+                            ) : (
+                                <button className='realEstate__buy'
+                                    onClick={buyHandler} disabled={hasBought}>
+                                    Buy
+                                </button>
+                            )}
 
-                    <button className='realEstate__contact'>
-                        Contact
-                    </button>
+                            <button className='realEstate__contact'>
+                                Contact
+                            </button>
+                        </div>
+                    )}
 
                     <hr />
                     <h2>Description</h2>
