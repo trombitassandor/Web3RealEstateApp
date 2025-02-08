@@ -323,6 +323,15 @@ header {
   transition: all 250ms ease;
 }
 
+.realEstate__buy:disabled,
+.realEstate__contact:disabled,
+.realEstate__owned:disabled {
+  background-color: gray;
+  color: lightgray;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .realEstate__buy {
   width: 225px;
   height: 50px;
