@@ -29,3 +29,9 @@ In a separate terminal execute:
 
 ### 7. Start frontend
 `$ npm run start`
+
+
+### 8. Ipfs web3 storage installs
+`npm install ipfs-http-client`
+`npm install web3.storage`
+`npm install @pinata/sdk`
