@@ -13,8 +13,16 @@ describe("PinataStorageService", function () {
     pinataStorageService = new PinataStorageService(mockApiKey, mockApiSecret);
   });
 
+  it("should upload a file from path and return the CID", async function () {
+    cid = await pinataStorageService.uploadFileFromPath(filePath);
+    expect(cid).to.be.a('string');
+    expect(cid.length).to.be.greaterThan(0);
+  });
+
   it("should upload a file and return the CID", async function () {
-    cid = await pinataStorageService.uploadFile(filePath);
+    const file = fs.createReadStream(filePath);
+    const fileName = filePath.split('/').pop();
+    cid = await pinataStorageService.uploadFile(file, fileName);
     expect(cid).to.be.a('string');
     expect(cid.length).to.be.greaterThan(0);
   });

@@ -6,14 +6,18 @@ class PinataStorageService {
         this.pinata = new pinataSDK(apiKey, apiSecret);
     }
 
-    async uploadFile(filePath) {
-        try {
-            if (!fs.existsSync(filePath)) {
-                throw new Error(`File does not exist at path: ${filePath}`);
-            }
+    async uploadFileFromPath(filePath) {
+        if (!fs.existsSync(filePath)) {
+            throw new Error(`File does not exist at path: ${filePath}`);
+        }
+        const file = fs.createReadStream(filePath);
+        const fileName = filePath.split('/').pop();
+        const ipfsHash = this.uploadFile(file, fileName);
+        return ipfsHash;
+    }
 
-            const file = fs.createReadStream(filePath);
-            const fileName = filePath.split('/').pop();
+    async uploadFile(file, fileName) {
+        try {
             const options = {
                 pinataMetadata: {
                     name: fileName,
