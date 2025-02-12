@@ -41,15 +41,8 @@ class PinataStorageService {
         }
     }
 
-    async fetchFile(cid) {
-        try {
-            const url = `https://gateway.pinata.cloud/ipfs/${cid}`;
-            console.log('Fetching file from:', url);
-            return url;
-        } catch (error) {
-            console.error('Error fetching file from Pinata:', error);
-            throw new Error('Failed to fetch file from Pinata');
-        }
+    getUrl(cid) {
+        return `https://gateway.pinata.cloud/ipfs/${cid}`;
     }
 
     async listPinnedFiles() {
@@ -62,6 +55,39 @@ class PinataStorageService {
             throw new Error('Failed to list pinned files');
         }
     }
+
+    async unpinFile(cid) {
+        try {
+            if (typeof cid !== 'string') {
+                throw new Error(`Invalid CID: ${cid}`);
+            }
+            console.log("unpinFile with cid=", cid);
+            const result = await this.pinata.unpin([cid]);
+            console.log(`File with CID ${cid} successfully unpinned`);
+            return result;
+        } catch (error) {
+            console.error('Error unpinning file from Pinata:', error);
+            throw new Error('Failed to unpin file from Pinata');
+        }
+    }
+
+    // Fetch file content from Pinata using the CID
+    async fetchFile(cid) {
+        try {
+            const url = this.getUrl(cid);
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error('Error fetching file from Pinata');
+            }
+
+            return response;
+        } catch (error) {
+            console.error('Error fetching file from Pinata:', error);
+            throw new Error('Failed to fetch file from Pinata');
+        }
+    }
+
 }
 
 export default PinataStorageService;
