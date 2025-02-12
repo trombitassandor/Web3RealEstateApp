@@ -17,49 +17,42 @@ class RealEstateStorageService {
 
     /**
      * Upload image and metadata to storage service (e.g., Pinata).
-     * @param {Buffer} imageBuffer - The image file buffer to be uploaded.
+     * @param {Buffer} imageStream - The image file stream to be uploaded.
      * @param {string} realEstateName - The name of the real estate.
      * @param {string} realEstateAddress - The address of the real estate.
      * @param {string} description - A description of the real estate.
      * @param {Array} attributes - An array of attributes for the real estate (e.g., price, bedrooms).
      * @returns {string} The CID of the uploaded metadata.
      */
-    async uploadFile(
-        id,
-        seller,
-        imageBuffer,
-        realEstateName,
-        realEstateAddress,
-        description,
-        attributes) {
+    async uploadFile(realEstateUploadData) {
         try {
             // Upload image
-            const imageName = `${id}_image`;
+            const imageName = `${realEstateUploadData.id}_image`;
             const imageCID = await this.storageService
-                .uploadFile(imageBuffer, imageName);
+                .uploadFile(realEstateUploadData.imageStream, imageName);
             console.log('Image uploaded successfully. CID:', imageCID);
 
             // Create metadata
             const metadata = {
-                seller: seller,
-                name: realEstateName,
-                address: realEstateAddress,
-                description: description,
+                seller: realEstateUploadData.seller,
+                name: realEstateUploadData.name,
+                address: realEstateUploadData.address,
+                description: realEstateUploadData.description,
                 image: `https://gateway.pinata.cloud/ipfs/${imageCID}`,
-                attributes: attributes,
+                attributes: realEstateUploadData.attributes,
             };
             const metadataJson = JSON.stringify(metadata, null, 2);
-            console.log("Metadata object: ", metadataJson); 
+            console.log("Metadata object: ", metadataJson);
 
             // Convert metadata to buffer and upload
             const metadataBuffer = Buffer.from(metadataJson);
             const metadataStream = streamifier.createReadStream(metadataBuffer);
-            const metadataFileName = `${id}_metadata.json`;
+            const metadataFileName = `${realEstateUploadData.id}_metadata.json`;
             const metadataCID = await this.storageService
                 .uploadFile(metadataStream, metadataFileName);
             console.log('Metadata uploaded successfully. CID:', metadataCID);
 
-            return [ metadataCID, imageCID ];
+            return [metadataCID, imageCID];
         } catch (error) {
             console.error('Error uploading file:', error);
             throw new Error('Failed to upload file');

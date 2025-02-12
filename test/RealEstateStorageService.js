@@ -3,6 +3,10 @@ const fs = require('fs');
 const { default: PinataStorageService } = require('../scripts/pinataStorageService');
 const { default: RealEstateStorageService } = require('../scripts/realEstateStorageService');
 const { ethers } = require("hardhat");
+const { default: EthersUtils } = require("../src/utils/EthersUtils");
+const { default: RealEstateUtils } = require("../src/utils/RealEstateUtils");
+const { default: RealEstateUploadData } = require("../scripts/realEstateUploadData");
+const { default: RealEstateTokenFactory } = require("../scripts/realEstateTokenFactory");
 
 describe("RealEstateStorageService", function () {
     const apiKey = '007cc80ed8bdb18134b8';
@@ -11,41 +15,44 @@ describe("RealEstateStorageService", function () {
 
     let pinataStorageService;
     let realEstateStorageService;
+    let realEstateFactory;
     let metadataCID;
     let imageCID;
-    let seller;
+    let buyer, seller, inspector, lender;
+    let realEstateContract;
 
     beforeEach(async () => {
-        [seller] = await ethers.getSigners();
+        [buyer, seller, inspector, lender] = await ethers.getSigners();
+
         pinataStorageService = new PinataStorageService(apiKey, apiSecret);
         realEstateStorageService = new RealEstateStorageService(pinataStorageService);
+
+        const RealEstate = await ethers.getContractFactory('RealEstate');
+        realEstateContract = await RealEstate.deploy();
+
+        realEstateFactory = new RealEstateTokenFactory(
+            realEstateStorageService, realEstateContract);
     });
 
     it("should upload a file and return the metadata CID", async function () {
-        const id = "1";
-        // const imageBuffer = fs.readFileSync(filePath);
-        const imageBuffer = fs.createReadStream(filePath);
-        const realEstateName = "Real Estate 00";
-        const realEstateAddress = "Address of Real Estate 00";
-        const description = "Real Estate 00 Description";
-        const attributes = [
-            { trait_type: "Purchase Price", value: "$112,000" },
-            { trait_type: "Type of Residence", value: "Apartments" },
-            { trait_type: "Bedrooms", value: "1" },
-            { trait_type: "Bathrooms", value: "1" },
-            { trait_type: "Square Metre", value: "60 m²" },
-            { trait_type: "Year Built", value: "2024" },
-        ];
-
-        [metadataCID, imageCID] = await realEstateStorageService.uploadFile(
-            id,
-            seller.address,
-            imageBuffer,
-            realEstateName,
-            realEstateAddress,
-            description,
-            attributes
+        const realEstateUploadData = new RealEstateUploadData(
+            id = EthersUtils.getSlicedAccountAddress(realEstateContract.address),
+            imageStream = fs.createReadStream(filePath),
+            name = "Real Estate 00",
+            address = "Address of Real Estate 00",
+            description = "Real Estate 00 Description",
+            attributes = [
+                { trait_type: "Purchase Price", value: "$112,000" },
+                { trait_type: "Type of Residence", value: "Apartments" },
+                { trait_type: "Bedrooms", value: "1" },
+                { trait_type: "Bathrooms", value: "1" },
+                { trait_type: "Square Metre", value: "60 m²" },
+                { trait_type: "Year Built", value: "2024" },
+            ]
         );
+
+        [metadataCID, imageCID] =
+            await realEstateFactory.uploadAndMint(realEstateUploadData);
 
         expect(metadataCID).to.be.a('string');
         expect(metadataCID.length).to.be.greaterThan(0);
