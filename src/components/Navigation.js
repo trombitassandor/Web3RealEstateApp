@@ -1,7 +1,8 @@
 import logo from '../assets/logo.svg';
 import EthersUtils from '../utils/EthersUtils';
+import { useEffect, useState } from 'react';
 
-const Navigation = ({ account, setAccount }) => {
+const Navigation = ({ account, setAccount, onClickSell }) => {
     const connectHandler = async () => {
         const account = await EthersUtils.requestAccountAddress();
         setAccount(account);
@@ -18,7 +19,7 @@ const Navigation = ({ account, setAccount }) => {
             <ul className='nav__links'>
                 <li><a href='#'>Buy</a></li>
                 <li><a href='#'>Rent</a></li>
-                <li><a href='#'>Sell</a></li>
+                <li><a href='#' onClick={onClickSell}>Sell</a></li>
             </ul>
 
             <div className='nav__brand'>

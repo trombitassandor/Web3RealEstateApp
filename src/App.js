@@ -5,6 +5,7 @@ import { ethers } from 'ethers';
 import Navigation from './components/Navigation';
 import Search from './components/Search';
 import RealEstate from './components/RealEstate';
+import Sell from './components/Sell';
 
 // ABIs
 import RealEstateABI from './abis/RealEstate.json'
@@ -23,7 +24,8 @@ function App() {
   const [allRealEstates, setAllReatEstates] = useState([]);
   const [currentRealEstate, setCurrentRealEstate] = useState(null);
   const [currentRealEstateId, setCurrentRealEstateId] = useState(null);
-  const [toggle, setToggle] = useState(false);
+  const [realEstateToggle, setRealEstateToggle] = useState(false);
+  const [sellToggle, setSellToggle] = useState(false);
 
   const loadBlockchainData = async () => {
     const provider =
@@ -79,12 +81,16 @@ function App() {
     console.log("toggleRealEstate", realEstate);
     setCurrentRealEstate(realEstate);
     setCurrentRealEstateId(id);
-    setToggle(!toggle);
+    setRealEstateToggle(!realEstateToggle);
   };
+
+  const toggleSell = (isToggled) => {
+    setSellToggle(isToggled);
+  }
 
   return (
     <div>
-      <Navigation account={account} setAccount={setAccount} />
+      <Navigation account={account} setAccount={setAccount} onClickSell={() => toggleSell(true)}/>
       <Search />
       <div className='cards__section'>
         <h3>Welcome to Web3RealEstateApp!</h3>
@@ -124,7 +130,7 @@ function App() {
         </div>
       </div>
       {
-        toggle && <RealEstate
+        realEstateToggle && <RealEstate
           realEstate={currentRealEstate}
           realEstateId={currentRealEstateId}
           provider={provider}
@@ -132,6 +138,9 @@ function App() {
           escrow={escrow}
           onClose={toggleRealEstate}
         />
+      }
+      {
+        sellToggle && <Sell onClose={() => toggleSell(false)} />
       }
     </div>
   );
