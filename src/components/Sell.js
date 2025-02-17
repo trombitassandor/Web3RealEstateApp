@@ -36,32 +36,42 @@ const Sell = ({ onClose }) => {
         setAttributes(updatedAttributes);
     };
 
-    const handleSubmit = () => {
-        const newErrors = {};
-
-        if (!name.trim()) {
-            newErrors.name = "Name is required";
+    const validateForm = () => {
+        let formErrors = {};
+        let isValid = true;
+    
+        // Check if required fields are filled
+        if (!name) {
+          formErrors.name = "Name is required.";
+          isValid = false;
         }
-        if (!address.trim()) {
-            newErrors.address = "Address is required";
+        if (!address) {
+          formErrors.address = "Address is required.";
+          isValid = false;
         }
-        if (!description.trim()) {
-            newErrors.description = "Description is required";
+        if (!description) {
+          formErrors.description = "Description is required.";
+          isValid = false;
         }
-
-        attributes.forEach((attribute, index) => {
-            if (!attribute.trait_type) {
-                newErrors[`attribute_${index}`] = "Attribute is required";
-            }
-            if (!attribute.value) {
-                newErrors[`value_${index}`] = "Value is required";
-            }
+    
+        // Check attributes fields (trait_type and value)
+        attributes.forEach((attr, index) => {
+          if (!attr.trait_type) {
+            formErrors[`attribute_${index}`] = "Attribute is required.";
+            isValid = false;
+          }
+          if (!attr.value) {
+            formErrors[`value_${index}`] = "Value is required.";
+            isValid = false;
+          }
         });
+    
+        setErrors(formErrors);
+        return isValid;
+      };
 
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            return; // Stop submission if errors exist
-        }
+    const handleSubmit = () => {
+        if (!validateForm()) return;
 
         const realEstateData = {
             name,
