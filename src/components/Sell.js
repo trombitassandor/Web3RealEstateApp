@@ -1,5 +1,6 @@
 import { useState } from "react";
-import close from '../assets/close.svg';
+import Close from '../assets/close.svg';
+import Popup from "./Popup";
 
 const Sell = ({ onClose }) => {
     const [name, setName] = useState("");
@@ -15,6 +16,8 @@ const Sell = ({ onClose }) => {
         { trait_type: "Year Built", value: "" },
     ]);
     const [errors, setErrors] = useState({});
+    const [popupEnabled, setPopupEnabled] = useState(false);
+    const [popupMessage, setPopupMessage] = useState("");
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
@@ -39,39 +42,47 @@ const Sell = ({ onClose }) => {
     const validateForm = () => {
         let formErrors = {};
         let isValid = true;
-    
+
         // Check if required fields are filled
         if (!name) {
-          formErrors.name = "Name is required.";
-          isValid = false;
+            formErrors.name = "Name is required.";
+            isValid = false;
         }
         if (!address) {
-          formErrors.address = "Address is required.";
-          isValid = false;
+            formErrors.address = "Address is required.";
+            isValid = false;
         }
         if (!description) {
-          formErrors.description = "Description is required.";
-          isValid = false;
+            formErrors.description = "Description is required.";
+            isValid = false;
         }
-    
+
         // Check attributes fields (trait_type and value)
         attributes.forEach((attr, index) => {
-          if (!attr.trait_type) {
-            formErrors[`attribute_${index}`] = "Attribute is required.";
-            isValid = false;
-          }
-          if (!attr.value) {
-            formErrors[`value_${index}`] = "Value is required.";
-            isValid = false;
-          }
+            if (!attr.trait_type) {
+                formErrors[`attribute_${index}`] = "Attribute is required.";
+                isValid = false;
+            }
+            if (!attr.value) {
+                formErrors[`value_${index}`] = "Value is required.";
+                isValid = false;
+            }
         });
-    
+
         setErrors(formErrors);
         return isValid;
-      };
+    };
+
+    const showPopupMessage = (message) => {
+        setPopupMessage(message);
+        setPopupEnabled(true);
+    }
 
     const handleSubmit = () => {
-        if (!validateForm()) return;
+        if (!validateForm()) {
+            showPopupMessage("Please fill all required fields.");
+            return;
+        }
 
         const realEstateData = {
             name,
@@ -82,8 +93,10 @@ const Sell = ({ onClose }) => {
         };
 
         console.log("Generated JSON:", JSON.stringify(realEstateData, null, 2));
-        
+
         onClose(); // Close popup after submission
+
+        showPopupMessage("Real Estate Sell Submit");
     };
 
     return (
@@ -222,7 +235,18 @@ const Sell = ({ onClose }) => {
                         Submit
                     </button>
                 </div>
+
+                <button onClick={onClose} className="realEstate__close">
+                    <img src={Close} alt="Close" />
+                </button>
+
+
             </div>
+            <Popup
+                message={popupMessage}
+                show={popupEnabled}
+                onClose={() => setPopupEnabled(false)}
+            />
         </div>
     );
 };

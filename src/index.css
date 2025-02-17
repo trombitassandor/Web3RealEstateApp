@@ -565,3 +565,57 @@ header {
     display: none;
   }
 }
+
+/* ------------------------------------------------------ */
+/* -- Popup -- */
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.popup-content {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  width: auto;
+  max-width: 90%; /* Ensure it doesn’t take up the whole screen on mobile */
+  min-width: 250px; /* Minimum width to avoid collapsing */
+  pointer-events: all;
+  margin: 20px;
+  transition: opacity 0.3s ease-in-out;
+  border: 1px solid #e2e2e2;
+  opacity: 1;
+  word-wrap: break-word; /* Handle long text properly */
+}
+
+.popup-content.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+}
+
+.popup-overlay.fade-out .popup-content {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.popup-content p {
+  font-size: 16px;
+  color: #333;
+  margin: 0; /* Remove unnecessary spacing around text */
+}
