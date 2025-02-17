@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Close from '../assets/close.svg';
 import Popup from "./Popup";
+import { usePopup } from '../PopupContext';
 
 const Sell = ({ onClose }) => {
     const [name, setName] = useState("");
@@ -18,6 +19,7 @@ const Sell = ({ onClose }) => {
     const [errors, setErrors] = useState({});
     const [popupEnabled, setPopupEnabled] = useState(false);
     const [popupMessage, setPopupMessage] = useState("");
+    const { showGlobalPopup } = usePopup();
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
@@ -96,7 +98,7 @@ const Sell = ({ onClose }) => {
 
         onClose(); // Close popup after submission
 
-        showPopupMessage("Real Estate Sell Submit");
+        showGlobalPopup("Real Estate Sell Submit");
     };
 
     return (

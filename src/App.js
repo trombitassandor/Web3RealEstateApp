@@ -6,6 +6,7 @@ import Navigation from './components/Navigation';
 import Search from './components/Search';
 import RealEstate from './components/RealEstate';
 import Sell from './components/Sell';
+import { PopupProvider } from './PopupContext'; 
 
 // ABIs
 import RealEstateABI from './abis/RealEstate.json'
@@ -89,6 +90,7 @@ function App() {
   }
 
   return (
+    <PopupProvider>
     <div>
       <Navigation account={account} setAccount={setAccount} onClickSell={() => toggleSell(true)}/>
       <Search />
@@ -143,6 +145,7 @@ function App() {
         sellToggle && <Sell onClose={() => toggleSell(false)} />
       }
     </div>
+    </PopupProvider>
   );
 }
 
