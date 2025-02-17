@@ -328,7 +328,6 @@ header {
 .attributes-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .attribute-group {
@@ -376,7 +375,40 @@ header {
   background-color: #bdbdbd;
 }
 
+.error-text {
+  color: red;
+  font-size: 14px;
+  margin-top: -5px;
+  font-style: italic;
+  margin-left: 5px;
+}
 
+.error-input {
+  background-color: #ffe6e6; /* Light red background for better visibility */
+}
+
+.submit-button {
+  display: block; /* Make it take full width to easily center */
+  margin: 20px auto; /* Centers the button and adds spacing */
+  padding: 12px 24px; /* Makes it bigger */
+  background-color: #28a745; /* A strong green color */
+  color: white; /* White text */
+  font-size: 1.2rem; /* Larger text */
+  font-weight: bold; /* Make text more visible */
+  border-radius: 8px; /* Rounded corners */
+  border: none; /* Remove default border */
+  cursor: pointer; /* Pointer cursor */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #218838; /* Darker green for hover */
+  transform: scale(1.05); /* Slight scale effect */
+}
+
+.submit-button:active {
+  transform: scale(0.98); /* Click effect */
+}
 
 /* ------------------------------------------------------ */
 /* -- Real Estates -- */
