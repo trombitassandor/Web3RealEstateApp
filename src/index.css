@@ -240,9 +240,12 @@ header {
   /* grid-template-columns: repeat(2, 1fr); */
   align-items: center;
 
-  width: 90%; /* Take up the full width of the parent */
-  max-width: 600px; /* Set a maximum width of 600px */
-  margin: 0 auto; /* Center the element horizontally */
+  width: 90%;
+  /* Take up the full width of the parent */
+  max-width: 600px;
+  /* Set a maximum width of 600px */
+  margin: 0 auto;
+  /* Center the element horizontally */
 
   padding: 20px;
 
@@ -259,26 +262,40 @@ header {
 }
 
 .sell__details input[type="text"] {
-  border: 2px solid #ccc; /* Light gray border */
-  border-radius: 4px; /* Rounded corners */
-  padding: 8px; /* Padding for input fields */
-  margin-bottom: 10px; /* Space between fields */
-  width: 100%; /* Ensure they fill the available space */
+  border: 2px solid #ccc;
+  /* Light gray border */
+  border-radius: 4px;
+  /* Rounded corners */
+  padding: 8px;
+  /* Padding for input fields */
+  margin-bottom: 10px;
+  /* Space between fields */
+  width: 100%;
+  /* Ensure they fill the available space */
 }
 
 .sell__details input[type="text"]:focus {
-  border-color: #007BFF; /* Change border color on focus */
-  outline: none; /* Remove default outline */
+  border-color: #007BFF;
+  /* Change border color on focus */
+  outline: none;
+  /* Remove default outline */
 }
 
 .sell__details .attributes-section {
-  border: 2px solid #ccc; /* Border around the entire section */
-  border-radius: 8px; /* Rounded corners */
-  padding: 16px; /* Padding around the section */
-  margin-top: 10px; /* Space above the section */
-  margin-bottom: 10px; /* Space below the section */
-  max-height: 300px; /* Maximum height for the section */
-  overflow-y: auto; /* Vertical scroll when content overflows */
+  border: 2px solid #ccc;
+  /* Border around the entire section */
+  border-radius: 8px;
+  /* Rounded corners */
+  padding: 16px;
+  /* Padding around the section */
+  margin-top: 10px;
+  /* Space above the section */
+  margin-bottom: 10px;
+  /* Space below the section */
+  max-height: 300px;
+  /* Maximum height for the section */
+  overflow-y: auto;
+  /* Vertical scroll when content overflows */
 }
 
 .sell__details .attributes-section .attribute-group {
@@ -290,31 +307,39 @@ header {
   border: 2px solid #ccc;
   padding: 8px;
   border-radius: 4px;
-  flex: 1; /* Make inputs expand to take up remaining space */
+  flex: 1;
+  /* Make inputs expand to take up remaining space */
 }
 
 .sell__details .attributes-section .attribute-group button {
-  background-color: #ff6347; /* Red background for remove button */
+  background-color: #ff6347;
+  /* Red background for remove button */
   color: white;
   border: none;
-  padding: 4px 10px; /* Adjusted padding for smaller button height */
+  padding: 4px 10px;
+  /* Adjusted padding for smaller button height */
   border-radius: 4px;
   cursor: pointer;
-  height: 32px; /* Ensure button height matches input fields */
-  align-self: center; /* Vertically center the button */
+  height: 32px;
+  /* Ensure button height matches input fields */
+  align-self: center;
+  /* Vertically center the button */
   display: flex;
   justify-content: center;
-  align-items: center; /* Ensure the content inside button is also centered */
+  align-items: center;
+  /* Ensure the content inside button is also centered */
 }
 
 .sell__details .attributes-section .attribute-group button:hover {
-  background-color: #e53e3e; /* Darker red on hover */
+  background-color: #e53e3e;
+  /* Darker red on hover */
 }
 
 /* Attributes Section */
 .attributes-section {
   border: 1px solid #e0e0e0;
-  padding: 10px 20px; /* Adjusted padding */
+  padding: 10px 20px;
+  /* Adjusted padding */
   margin-bottom: 20px;
 }
 
@@ -341,22 +366,27 @@ header {
   padding: 0.5rem;
   border: 1px solid #e0e0e0;
   border-radius: 5px;
-  min-width: 200px; /* Ensures the input is wider */
+  min-width: 200px;
+  /* Ensures the input is wider */
 }
 
 .remove-button {
   padding: 0.25rem;
   background-color: transparent;
-  border: 1px solid #e0e0e0; /* Border for the remove button */
+  border: 1px solid #e0e0e0;
+  /* Border for the remove button */
   color: red;
   font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px; /* Makes the button square */
-  height: 30px; /* Makes the button square */
-  border-radius: 5px; /* Optional: to round the button edges */
+  width: 30px;
+  /* Makes the button square */
+  height: 30px;
+  /* Makes the button square */
+  border-radius: 5px;
+  /* Optional: to round the button edges */
 }
 
 .remove-button:hover {
@@ -384,30 +414,44 @@ header {
 }
 
 .error-input {
-  background-color: #ffe6e6; /* Light red background for better visibility */
+  background-color: #ffe6e6;
+  /* Light red background for better visibility */
 }
 
 .submit-button {
-  display: block; /* Make it take full width to easily center */
-  margin: 20px auto; /* Centers the button and adds spacing */
-  padding: 12px 24px; /* Makes it bigger */
-  background-color: #28a745; /* A strong green color */
-  color: white; /* White text */
-  font-size: 1.2rem; /* Larger text */
-  font-weight: bold; /* Make text more visible */
-  border-radius: 8px; /* Rounded corners */
-  border: none; /* Remove default border */
-  cursor: pointer; /* Pointer cursor */
+  display: block;
+  /* Make it take full width to easily center */
+  margin: 20px auto;
+  /* Centers the button and adds spacing */
+  padding: 12px 24px;
+  /* Makes it bigger */
+  background-color: #28a745;
+  /* A strong green color */
+  color: white;
+  /* White text */
+  font-size: 1.2rem;
+  /* Larger text */
+  font-weight: bold;
+  /* Make text more visible */
+  border-radius: 8px;
+  /* Rounded corners */
+  border: none;
+  /* Remove default border */
+  cursor: pointer;
+  /* Pointer cursor */
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .submit-button:hover {
-  background-color: #218838; /* Darker green for hover */
-  transform: scale(1.05); /* Slight scale effect */
+  background-color: #218838;
+  /* Darker green for hover */
+  transform: scale(1.05);
+  /* Slight scale effect */
 }
 
 .submit-button:active {
-  transform: scale(0.98); /* Click effect */
+  transform: scale(0.98);
+  /* Click effect */
 }
 
 /* ------------------------------------------------------ */
@@ -562,7 +606,11 @@ header {
   }
 
   .nav__links {
-    display: none;
+    display: flex;
+    justify-content: space-around;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
   }
 }
 
@@ -588,14 +636,17 @@ header {
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
   text-align: center;
   width: auto;
-  max-width: 90%; /* Ensure it doesn’t take up the whole screen on mobile */
-  min-width: 250px; /* Minimum width to avoid collapsing */
+  max-width: 90%;
+  /* Ensure it doesn’t take up the whole screen on mobile */
+  min-width: 250px;
+  /* Minimum width to avoid collapsing */
   pointer-events: all;
   margin: 20px;
   transition: opacity 0.3s ease-in-out;
   border: 1px solid #e2e2e2;
   opacity: 1;
-  word-wrap: break-word; /* Handle long text properly */
+  word-wrap: break-word;
+  /* Handle long text properly */
 }
 
 .popup-content.fade-in {
@@ -617,5 +668,6 @@ header {
 .popup-content p {
   font-size: 16px;
   color: #333;
-  margin: 0; /* Remove unnecessary spacing around text */
+  margin: 0;
+  /* Remove unnecessary spacing around text */
 }
