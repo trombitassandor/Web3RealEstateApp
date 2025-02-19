@@ -36,8 +36,8 @@ class PinataStorageService {
             if (error.response) {
                 console.error('Pinata response error:', error.response.data);
             }
-
-            throw new Error('Failed to upload file to Pinata');
+            
+            throw new Error(`Failed to upload file to Pinata: ${error.message}`);
         }
     }
 

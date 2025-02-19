@@ -4,7 +4,7 @@ class RealEstateTokenFactory {
         this.realEstateContract = realEstateContract;
     }
 
-    async uploadAndMint(realEstateUploadData) {
+    async uploadAndMint(signer, realEstateUploadData) {
         const nextTokenId =
             await this.realEstateContract.nextTokenId();
 
@@ -14,7 +14,7 @@ class RealEstateTokenFactory {
             await this.realEstateStorageService
                 .uploadFile(realEstateUploadData);
 
-        this.realEstateContract.mint(metadataCID);
+        this.realEstateContract.connect(signer).mint(metadataCID);
 
         return [metadataCID, imageCID];
     }

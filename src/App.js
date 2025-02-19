@@ -145,6 +145,7 @@ function App() {
         }
         {
           sellToggle && <Sell
+            account={account}
             realEstateContract={realEstateContract}
             onClose={() => toggleSell(false)} />
         }

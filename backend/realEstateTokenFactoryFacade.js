@@ -38,12 +38,13 @@ class RealEstateTokenFactoryFacade {
             realEstateStorageService, realEstateContract);
     }
 
-    async uploadAndMint(id, image, name, description, attributes) {
+    async uploadAndMint(signer, id, image, name, description, attributes) {
+        //todo: image to imageStream
         const realEstateUploadData = new RealEstateUploadData(
             id, image, name, description, attributes);
 
         let [metadataCID, imageCID] =
-            await this.realEstateFactory.uploadAndMint(realEstateUploadData);
+            await this.realEstateFactory.uploadAndMint(signer, realEstateUploadData);
 
         return [metadataCID, imageCID];
     }

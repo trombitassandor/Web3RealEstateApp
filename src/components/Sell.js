@@ -6,7 +6,7 @@ import { usePopup } from '../PopupContext';
 import EthersUtils from "../utils/EthersUtils";
 import { uploadAndMint } from "../utils/RealEstateService";
 
-const Sell = ({ realEstateContract, onClose }) => {
+const Sell = ({ account, realEstateContract, onClose }) => {
     console.log("realEstateContract =", realEstateContract);
 
     const [name, setName] = useState("");
@@ -96,7 +96,7 @@ const Sell = ({ realEstateContract, onClose }) => {
         console.log("Start upload real estate");
         console.log("realEstateUploadData =", id, image, name, description, attributes);
 
-        await uploadAndMint(id, image, name, description, attributes);
+        await uploadAndMint(account, id, image, name, description, attributes);
 
         console.log("Finished upload real estate");
 

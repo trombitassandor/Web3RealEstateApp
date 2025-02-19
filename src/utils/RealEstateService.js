@@ -2,7 +2,7 @@
 const PORT = 5001;
 const API_URL = `http://localhost:${PORT}`;
 
-export async function uploadAndMint(id, image, name, description, attributes) {
+export async function uploadAndMint(account, id, image, name, description, attributes) {
     try {
         console.log("uploadAndMint PORT =", PORT);
         const response = await fetch(`${API_URL}/upload-mint`, {
@@ -10,7 +10,7 @@ export async function uploadAndMint(id, image, name, description, attributes) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ id, image, name, description, attributes })
+            body: JSON.stringify({account, id, image, name, description, attributes })
         });
 
         if (!response.ok) {

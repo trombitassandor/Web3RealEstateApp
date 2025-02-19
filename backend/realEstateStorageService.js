@@ -26,10 +26,10 @@ class RealEstateStorageService {
      */
     async uploadFile(realEstateUploadData) {
         try {
-            const imageCID = null;
+            let imageCID = null;
 
             // Upload image
-            if (realEstateUploadData.image != null) {
+            if (realEstateUploadData.imageStream != null) {
                 const imageName = `${realEstateUploadData.id}_image`;
                 imageCID = await this.storageService
                     .uploadFile(realEstateUploadData.imageStream, imageName);
@@ -63,7 +63,7 @@ class RealEstateStorageService {
             return [metadataCID, imageCID];
         } catch (error) {
             console.error('Error uploading file:', error);
-            throw new Error('Failed to upload file');
+            throw new Error(`Failed to upload file: ${error.message}`);
         }
     }
 

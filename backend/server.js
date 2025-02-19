@@ -12,10 +12,10 @@ const realEstateTokenFactoryFacade = new RealEstateTokenFactoryFacade();
 
 app.post("/upload-mint", async (req, res) => {
     try {
-        const { id, image, name, description, attributes } = req.body;
+        const { signer, id, image, name, description, attributes } = req.body;
 
         const result = await realEstateTokenFactoryFacade
-            .uploadAndMint(id, image, name, description, attributes);
+            .uploadAndMint(signer, id, image, name, description, attributes);
 
         res.json({ success: true, metadataCID: result[0], imageCID: result[1] });
     } catch (error) {

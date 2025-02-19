@@ -51,8 +51,8 @@ describe("RealEstateStorageService", function () {
             ]
         );
 
-        [metadataCID, imageCID] =
-            await realEstateFactory.uploadAndMint(realEstateUploadData);
+        [metadataCID, imageCID] = await realEstateFactory
+            .uploadAndMint(seller, realEstateUploadData);
 
         expect(metadataCID).to.be.a('string');
         expect(metadataCID.length).to.be.greaterThan(0);
