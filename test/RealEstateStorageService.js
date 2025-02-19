@@ -1,12 +1,12 @@
 const { expect } = require("chai");
 const fs = require('fs');
-const { default: PinataStorageService } = require('../scripts/pinataStorageService');
-const { default: RealEstateStorageService } = require('../scripts/realEstateStorageService');
+const { default: PinataStorageService } = require('../backend/pinataStorageService');
+const { default: RealEstateStorageService } = require('../backend/realEstateStorageService');
 const { ethers } = require("hardhat");
 const { default: EthersUtils } = require("../src/utils/EthersUtils");
 const { default: RealEstateUtils } = require("../src/utils/RealEstateUtils");
-const { default: RealEstateUploadData } = require("../scripts/realEstateUploadData");
-const { default: RealEstateTokenFactory } = require("../scripts/realEstateTokenFactory");
+const { default: RealEstateUploadData } = require("../backend/realEstateUploadData");
+const { default: RealEstateTokenFactory } = require("../backend/realEstateTokenFactory");
 
 describe("RealEstateStorageService", function () {
     const apiKey = '007cc80ed8bdb18134b8';

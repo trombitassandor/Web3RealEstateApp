@@ -26,11 +26,19 @@ class RealEstateStorageService {
      */
     async uploadFile(realEstateUploadData) {
         try {
+            const imageCID = null;
+
             // Upload image
-            const imageName = `${realEstateUploadData.id}_image`;
-            const imageCID = await this.storageService
-                .uploadFile(realEstateUploadData.imageStream, imageName);
-            console.log('Image uploaded successfully. CID:', imageCID);
+            if (realEstateUploadData.image != null) {
+                const imageName = `${realEstateUploadData.id}_image`;
+                imageCID = await this.storageService
+                    .uploadFile(realEstateUploadData.imageStream, imageName);
+                console.log('Image uploaded successfully. CID:', imageCID);
+            }
+
+            const image = imageCID != null
+                ? `https://gateway.pinata.cloud/ipfs/${imageCID}`
+                : '';
 
             // Create metadata
             const metadata = {
@@ -38,7 +46,7 @@ class RealEstateStorageService {
                 name: realEstateUploadData.name,
                 address: realEstateUploadData.address,
                 description: realEstateUploadData.description,
-                image: `https://gateway.pinata.cloud/ipfs/${imageCID}`,
+                image: image,
                 attributes: realEstateUploadData.attributes,
             };
             const metadataJson = JSON.stringify(metadata, null, 2);

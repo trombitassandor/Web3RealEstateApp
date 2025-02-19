@@ -3,7 +3,12 @@ import Close from '../assets/close.svg';
 import Popup from "./Popup";
 import { usePopup } from '../PopupContext';
 
-const Sell = ({ onClose }) => {
+import EthersUtils from "../utils/EthersUtils";
+import { uploadAndMint } from "../utils/RealEstateService";
+
+const Sell = ({ realEstateContract, onClose }) => {
+    console.log("realEstateContract =", realEstateContract);
+
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [description, setDescription] = useState("");
@@ -80,21 +85,20 @@ const Sell = ({ onClose }) => {
         setPopupEnabled(true);
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!validateForm()) {
             showPopupMessage("Please fill all required fields.");
             return;
         }
 
-        const realEstateData = {
-            name,
-            address,
-            description,
-            image: image ? image.name : "", // You will handle the URL creation separately
-            attributes,
-        };
+        const id = EthersUtils.getSlicedAccountAddress(realEstateContract.address);
 
-        console.log("Generated JSON:", JSON.stringify(realEstateData, null, 2));
+        console.log("Start upload real estate");
+        console.log("realEstateUploadData =", id, image, name, description, attributes);
+
+        await uploadAndMint(id, image, name, description, attributes);
+
+        console.log("Finished upload real estate");
 
         onClose(); // Close popup after submission
 

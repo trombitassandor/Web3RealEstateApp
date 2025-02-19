@@ -6,7 +6,7 @@ import Navigation from './components/Navigation';
 import Search from './components/Search';
 import RealEstate from './components/RealEstate';
 import Sell from './components/Sell';
-import { PopupProvider } from './PopupContext'; 
+import { PopupProvider } from './PopupContext';
 
 // ABIs
 import RealEstateABI from './abis/RealEstate.json'
@@ -27,6 +27,7 @@ function App() {
   const [currentRealEstateId, setCurrentRealEstateId] = useState(null);
   const [realEstateToggle, setRealEstateToggle] = useState(false);
   const [sellToggle, setSellToggle] = useState(false);
+  const [realEstateContract, setRealEstateContract] = useState(null);
 
   const loadBlockchainData = async () => {
     const provider =
@@ -38,19 +39,20 @@ function App() {
     const networkConfig = config[network.chainId];
 
     const realEstateAddress = networkConfig.realEstate.address;
-    const realEstate = new ethers.Contract(
+    const realEstateContract = new ethers.Contract(
       realEstateAddress, RealEstateABI, provider);
+    setRealEstateContract(realEstateContract);
 
     console.log("realEstateAddress =", realEstateAddress);
-    console.log("realEstate =", realEstate);
+    console.log("realEstate =", realEstateContract);
 
-    const realEstateTotalSupply = await realEstate.totalSupply();
+    const realEstateTotalSupply = await realEstateContract.totalSupply();
     console.log("realEstateTotalSupply =", realEstateTotalSupply.toString());
 
     const allRealEstates = [];
 
     for (var tokenId = 1; tokenId <= realEstateTotalSupply; tokenId++) {
-      const tokenURI = await realEstate.tokenURI(tokenId);
+      const tokenURI = await realEstateContract.tokenURI(tokenId);
       console.log("Fetching tokenURI=", tokenURI);
       const response = await fetch(tokenURI);
       const metadata = await response.json();
@@ -91,60 +93,62 @@ function App() {
 
   return (
     <PopupProvider>
-    <div>
-      <Navigation account={account} setAccount={setAccount} onClickSell={() => toggleSell(true)}/>
-      <Search />
-      <div className='cards__section'>
-        <h3>Welcome to Web3RealEstateApp!</h3>
-        <hr />
-        <div className='cards'>
-          {
-            allRealEstates.map((realEstate, id) => (
-              <div className='card' key={id + 1} onClick={() => toggleRealEstate(realEstate, id + 1)}>
-                <div className='card__image'>
-                  <img src={RealEstateUtils.getImage(realEstate)} alt="RealEstate" />
-                </div>
-                <div className="card__info">
-                  <h4>
-                    {RealEstateUtils.getPurchasePrice(realEstate)}|
-                    {RealEstateUtils.getName(realEstate)}
-                  </h4>
-                  <h5>
+      <div>
+        <Navigation account={account} setAccount={setAccount} onClickSell={() => toggleSell(true)} />
+        <Search />
+        <div className='cards__section'>
+          <h3>Welcome to Web3RealEstateApp!</h3>
+          <hr />
+          <div className='cards'>
+            {
+              allRealEstates.map((realEstate, id) => (
+                <div className='card' key={id + 1} onClick={() => toggleRealEstate(realEstate, id + 1)}>
+                  <div className='card__image'>
+                    <img src={RealEstateUtils.getImage(realEstate)} alt="RealEstate" />
+                  </div>
+                  <div className="card__info">
+                    <h4>
+                      {RealEstateUtils.getPurchasePrice(realEstate)}|
+                      {RealEstateUtils.getName(realEstate)}
+                    </h4>
+                    <h5>
+                      <p>
+                        <strong>{RealEstateUtils.getYearBuilt(realEstate)} | </strong>
+                        <strong>{RealEstateUtils.getSquareMetre(realEstate)} | </strong>
+                        <strong>{RealEstateUtils.getBedrooms(realEstate)}</strong> bedrooms |
+                        <strong>{RealEstateUtils.getBathrooms(realEstate)}</strong> bathrooms
+                      </p>
+                    </h5>
                     <p>
-                      <strong>{RealEstateUtils.getYearBuilt(realEstate)} | </strong>
-                      <strong>{RealEstateUtils.getSquareMetre(realEstate)} | </strong>
-                      <strong>{RealEstateUtils.getBedrooms(realEstate)}</strong> bedrooms |
-                      <strong>{RealEstateUtils.getBathrooms(realEstate)}</strong> bathrooms
+                      <strong>Address | </strong>
+                      {RealEstateUtils.getAddress(realEstate)}
                     </p>
-                  </h5>
-                  <p>
-                    <strong>Address | </strong>
-                    {RealEstateUtils.getAddress(realEstate)}
-                  </p>
-                  <p>
-                    <strong>Description | </strong>
-                    {RealEstateUtils.getDescription(realEstate)}
-                  </p>
+                    <p>
+                      <strong>Description | </strong>
+                      {RealEstateUtils.getDescription(realEstate)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
-          }
+              ))
+            }
+          </div>
         </div>
+        {
+          realEstateToggle && <RealEstate
+            realEstate={currentRealEstate}
+            realEstateId={currentRealEstateId}
+            provider={provider}
+            account={account}
+            escrow={escrow}
+            onClose={toggleRealEstate}
+          />
+        }
+        {
+          sellToggle && <Sell
+            realEstateContract={realEstateContract}
+            onClose={() => toggleSell(false)} />
+        }
       </div>
-      {
-        realEstateToggle && <RealEstate
-          realEstate={currentRealEstate}
-          realEstateId={currentRealEstateId}
-          provider={provider}
-          account={account}
-          escrow={escrow}
-          onClose={toggleRealEstate}
-        />
-      }
-      {
-        sellToggle && <Sell onClose={() => toggleSell(false)} />
-      }
-    </div>
     </PopupProvider>
   );
 }
