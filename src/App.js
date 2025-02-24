@@ -30,6 +30,8 @@ function App() {
   const [realEstateContract, setRealEstateContract] = useState(null);
 
   const loadBlockchainData = async () => {
+    console.log("window.ethereum =", window.ethereum);
+
     const provider =
       new ethers.providers.Web3Provider(window.ethereum);
 
@@ -37,6 +39,19 @@ function App() {
 
     const network = await provider.getNetwork();
     const networkConfig = config[network.chainId];
+
+    console.log("networkConfig =", networkConfig);
+    console.log("networkConfig.realEstate =", networkConfig?.realEstate);
+    console.log("networkConfig.escrow =", networkConfig?.escrow);
+
+    if (!networkConfig || !networkConfig.realEstate || !networkConfig.escrow) {
+      console.error("Real estate or escrow contract address not found in networkConfig");
+      console.log(`Use Hardhat network! 
+        Default RPC URL Local = 127.0.0.1:8545
+        Chain ID = 31337
+        Currency symbol = ETH`)
+      return;
+    }
 
     const realEstateAddress = networkConfig.realEstate.address;
     const realEstateContract = new ethers.Contract(
