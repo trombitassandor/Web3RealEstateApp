@@ -7,7 +7,7 @@ RealEstate
 └── ...
 */
 
-import streamifier from 'streamifier';
+const streamifier = require('streamifier');
 
 class RealEstateStorageService {
     constructor(storageService) {
@@ -84,4 +84,4 @@ class RealEstateStorageService {
     }
 }
 
-export default RealEstateStorageService;
+module.exports = RealEstateStorageService;

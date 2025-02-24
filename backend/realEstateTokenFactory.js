@@ -20,4 +20,4 @@ class RealEstateTokenFactory {
     }
 }
 
-export default RealEstateTokenFactory;
+module.exports = RealEstateTokenFactory;

@@ -1,5 +1,5 @@
-import fs from 'fs';
-import pinataSDK from '@pinata/sdk';
+const fs = require('fs');
+const pinataSDK = require('@pinata/sdk');
 
 class PinataStorageService {
     constructor(apiKey, apiSecret) {
@@ -90,4 +90,4 @@ class PinataStorageService {
 
 }
 
-export default PinataStorageService;
+module.exports = PinataStorageService;

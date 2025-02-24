@@ -1,10 +1,10 @@
-import PinataStorageService from "./pinataStorageService.js";
-import RealEstateStorageService from "./realEstateStorageService.js";
-import RealEstateTokenFactory from "./realEstateTokenFactory.js";
-import RealEstateUploadData from "./realEstateUploadData.js";
-import { ethers } from "ethers";
-import { readFileSync } from 'fs';
-import path from 'path';
+const PinataStorageService = require("./pinataStorageService.js");
+const RealEstateStorageService = require("./realEstateStorageService.js");
+const RealEstateTokenFactory = require("./realEstateTokenFactory.js");
+const RealEstateUploadData = require("./realEstateUploadData.js");
+const { ethers } = require("ethers");
+const { readFileSync } = require('fs');
+const path = require('path');
 
 class RealEstateTokenFactoryFacade {
     constructor() {
@@ -50,4 +50,4 @@ class RealEstateTokenFactoryFacade {
     }
 }
 
-export default RealEstateTokenFactoryFacade;
+module.exports = RealEstateTokenFactoryFacade;

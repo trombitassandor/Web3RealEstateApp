@@ -16,4 +16,4 @@ class RealEstateUploadData {
     }
 }
 
-export default RealEstateUploadData;
+module.exports = RealEstateUploadData;
