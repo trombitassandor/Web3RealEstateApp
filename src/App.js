@@ -6,7 +6,7 @@ import Navigation from './components/Navigation';
 import Search from './components/Search';
 import RealEstate from './components/RealEstate';
 import Sell from './components/Sell';
-import { PopupProvider } from './PopupContext';
+import { usePopup } from './PopupContext';
 
 // ABIs
 import RealEstateABI from './abis/RealEstate.json'
@@ -28,6 +28,8 @@ function App() {
   const [realEstateToggle, setRealEstateToggle] = useState(false);
   const [sellToggle, setSellToggle] = useState(false);
   const [realEstateContract, setRealEstateContract] = useState(null);
+
+  const { showGlobalPopup } = usePopup();
 
   const loadBlockchainData = async () => {
     console.log("window.ethereum =", window.ethereum);
@@ -103,11 +105,15 @@ function App() {
   };
 
   const toggleSell = (isToggled) => {
+    if (!account) {
+      showGlobalPopup("Connect as seller");
+      return;
+    }
     setSellToggle(isToggled);
   }
 
   return (
-    <PopupProvider>
+
       <div>
         <Navigation account={account} setAccount={setAccount} onClickSell={() => toggleSell(true)} />
         <Search />
@@ -165,7 +171,6 @@ function App() {
             onClose={() => toggleSell(false)} />
         }
       </div>
-    </PopupProvider>
   );
 }
 

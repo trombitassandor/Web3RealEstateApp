@@ -7,6 +7,7 @@ import EthersUtils from "../utils/EthersUtils";
 import { uploadAndMint } from "../utils/RealEstateService";
 
 const Sell = ({ account, realEstateContract, onClose }) => {
+    console.log("seller account =", account);
     console.log("realEstateContract =", realEstateContract);
 
     const [name, setName] = useState("");
