@@ -20,7 +20,7 @@ import RealEstateUtils from './utils/RealEstateUtils';
 
 function App() {
   const [provider, setProvider] = useState(null);
-  const [account, setAccount] = useState(null);
+  const [accountAddress, setAccountAddress] = useState(null);
   const [escrow, setEscrow] = useState(null);
   const [allRealEstates, setAllReatEstates] = useState([]);
   const [currentRealEstate, setCurrentRealEstate] = useState(null);
@@ -89,7 +89,7 @@ function App() {
     window.ethereum.on('accountsChanged', async () => {
       const accountAddress =
         await EthersUtils.requestAccountAddress();
-      setAccount(accountAddress);
+      setAccountAddress(accountAddress);
     });
   };
 
@@ -105,7 +105,7 @@ function App() {
   };
 
   const toggleSell = (isToggled) => {
-    if (!account) {
+    if (!accountAddress) {
       showGlobalPopup("Connect as seller");
       return;
     }
@@ -115,7 +115,7 @@ function App() {
   return (
 
       <div>
-        <Navigation account={account} setAccount={setAccount} onClickSell={() => toggleSell(true)} />
+        <Navigation accountAddress={accountAddress} setAccountAddress={setAccountAddress} onClickSell={() => toggleSell(true)} />
         <Search />
         <div className='cards__section'>
           <h3>Welcome to Web3RealEstateApp!</h3>
@@ -159,14 +159,14 @@ function App() {
             realEstate={currentRealEstate}
             realEstateId={currentRealEstateId}
             provider={provider}
-            account={account}
+            accountAddress={accountAddress}
             escrow={escrow}
             onClose={toggleRealEstate}
           />
         }
         {
           sellToggle && <Sell
-            account={account}
+            accountAddress={accountAddress}
             realEstateContract={realEstateContract}
             onClose={() => toggleSell(false)} />
         }

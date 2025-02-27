@@ -5,7 +5,7 @@ import close from '../assets/close.svg';
 import RealEstateUtils from '../utils/RealEstateUtils';
 import EthersUtils from '../utils/EthersUtils';
 
-const RealEstate = ({ realEstate, realEstateId, provider, account, escrow, onClose }) => {
+const RealEstate = ({ realEstate, realEstateId, provider, accountAddress, escrow, onClose }) => {
     const [buyer, setBuyer] = useState(null);
     const [seller, setSeller] = useState(null);
     const [inspector, setInspector] = useState(null);
@@ -139,7 +139,7 @@ const RealEstate = ({ realEstate, realEstateId, provider, account, escrow, onClo
     useEffect(() => {
         console.log("realEstate =", realEstate);
         console.log("realEstateId =", realEstateId);
-        console.log("account =", account);
+        console.log("accountAddress =", accountAddress);
     }, []);
 
     return (
@@ -170,17 +170,17 @@ const RealEstate = ({ realEstate, realEstateId, provider, account, escrow, onClo
                         </div>
                     ) : (
                         <div>
-                            {(account === inspector) ? (
+                            {(accountAddress === inspector) ? (
                                 <button className='realEstate__buy'
                                     onClick={inspectHandler} disabled={hasInspected}>
                                     Approve Inspection
                                 </button>
-                            ) : (account === lender) ? (
+                            ) : (accountAddress === lender) ? (
                                 <button className='realEstate__buy'
                                     onClick={lendHandler} disabled={hasLended}>
                                     Approve & Lend
                                 </button>
-                            ) : (account === seller) ? (
+                            ) : (accountAddress === seller) ? (
                                 <button className='realEstate__buy'
                                     onClick={sellHandler} disabled={hasSold}>
                                     Approve & Sell

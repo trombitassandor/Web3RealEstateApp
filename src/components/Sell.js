@@ -6,8 +6,8 @@ import { usePopup } from '../PopupContext';
 import EthersUtils from "../utils/EthersUtils";
 import { uploadAndMint } from "../utils/RealEstateService";
 
-const Sell = ({ account, realEstateContract, onClose }) => {
-    console.log("seller account =", account);
+const Sell = ({ accountAddress, realEstateContract, onClose }) => {
+    console.log("seller account address =", accountAddress);
     console.log("realEstateContract =", realEstateContract);
 
     const [name, setName] = useState("");
@@ -92,13 +92,13 @@ const Sell = ({ account, realEstateContract, onClose }) => {
             return;
         }
 
-        const id = EthersUtils.getSlicedAccountAddress(realEstateContract.address);
+        const id = EthersUtils.getSlicedAccountAddress(accountAddress);
 
         console.log("Start upload real estate");
-        console.log("realEstateUploadData =", account, id, image, name, description, attributes);
+        console.log("realEstateUploadData =", accountAddress, id, image, name, description, attributes);
 
         try {
-            await uploadAndMint(account, id, image, name, description, attributes);
+            await uploadAndMint(accountAddress, id, image, name, description, attributes);
         }
         catch(error) {
             showGlobalPopup(error.message);

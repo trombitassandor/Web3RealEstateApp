@@ -2,16 +2,16 @@ import logo from '../assets/logo.svg';
 import EthersUtils from '../utils/EthersUtils';
 import { useEffect, useState } from 'react';
 
-const Navigation = ({ account, setAccount, onClickSell }) => {
+const Navigation = ({ accountAddress, setAccountAddress, onClickSell }) => {
     const connectHandler = async () => {
-        const account = await EthersUtils.requestAccountAddress();
-        setAccount(account);
-        console.log("setAccount=", account);
+        const accountAddress = await EthersUtils.requestAccountAddress();
+        setAccountAddress(accountAddress);
+        console.log("setAccountAddress=", accountAddress);
     }
 
     const disconnectHandler = async () => {
-        setAccount(null);
-        console.log("setAccount=", null);
+        setAccountAddress(null);
+        console.log("setAccountAddress=", null);
     }
 
     return (
@@ -27,14 +27,14 @@ const Navigation = ({ account, setAccount, onClickSell }) => {
                 <h1>Web3RealEstateApp</h1>
             </div>
 
-            {account
+            {accountAddress
                 ? (
                     <>
                         <button
                             type="button"
                             className="nav__connect"
                         >
-                            {EthersUtils.getSlicedAccountAddress(account)}
+                            {EthersUtils.getSlicedAccountAddress(accountAddress)}
                         </button>
 
                         <button
