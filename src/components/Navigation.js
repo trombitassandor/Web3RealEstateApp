@@ -1,16 +1,23 @@
 import logo from '../assets/logo.svg';
 import EthersUtils from '../utils/EthersUtils';
 import { useEffect, useState } from 'react';
+import { usePopup } from '../PopupContext';
 
 const Navigation = ({ accountAddress, setAccountAddress, onClickSell }) => {
+    const { showGlobalPopup } = usePopup();
+    
     const connectHandler = async () => {
         const accountAddress = await EthersUtils.requestAccountAddress();
         setAccountAddress(accountAddress);
+        showGlobalPopup(`Account connected 
+            ${EthersUtils.getSlicedAccountAddress(accountAddress)})`)
         console.log("setAccountAddress=", accountAddress);
     }
 
     const disconnectHandler = async () => {
         setAccountAddress(null);
+        showGlobalPopup(`Account disconnected 
+            (${EthersUtils.getSlicedAccountAddress(accountAddress)})`)
         console.log("setAccountAddress=", null);
     }
 

@@ -90,6 +90,8 @@ function App() {
       const accountAddress =
         await EthersUtils.requestAccountAddress();
       setAccountAddress(accountAddress);
+      showGlobalPopup(`Account changed 
+        (${EthersUtils.getSlicedAccountAddress(accountAddress)})`);
     });
   };
 
