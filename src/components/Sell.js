@@ -95,9 +95,15 @@ const Sell = ({ account, realEstateContract, onClose }) => {
         const id = EthersUtils.getSlicedAccountAddress(realEstateContract.address);
 
         console.log("Start upload real estate");
-        console.log("realEstateUploadData =", id, image, name, description, attributes);
+        console.log("realEstateUploadData =", account, id, image, name, description, attributes);
 
-        await uploadAndMint(account, id, image, name, description, attributes);
+        try {
+            await uploadAndMint(account, id, image, name, description, attributes);
+        }
+        catch(error) {
+            showGlobalPopup(error.message);
+            return;
+        }
 
         console.log("Finished upload real estate");
 

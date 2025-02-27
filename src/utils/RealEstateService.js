@@ -5,12 +5,29 @@ const API_URL = `http://localhost:${PORT}`;
 export async function uploadAndMint(account, id, image, name, description, attributes) {
     try {
         console.log("uploadAndMint PORT =", PORT);
+
+        const formData = new FormData();
+        formData.append('account', account);
+        formData.append('id', id);
+        formData.append('image', image);
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('attributes', JSON.stringify(attributes));
+
+        // Log form data to see what is inside
+        console.log("RealEstateService.uploadAndMint parameters");
+        for (let pair of formData.entries()) {
+            // If the value is a File object, log its details
+            if (pair[1] instanceof File) {
+                console.log(pair[0] + ": File ->", pair[1].name, pair[1].size, "bytes");
+            } else {
+                console.log(pair[0] + ": ", pair[1]);
+            }
+        }
+
         const response = await fetch(`${API_URL}/upload-mint`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({account, id, image, name, description, attributes })
+            body: formData
         });
 
         if (!response.ok) {
