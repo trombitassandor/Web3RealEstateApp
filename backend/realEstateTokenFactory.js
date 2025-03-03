@@ -10,12 +10,11 @@ class RealEstateTokenFactory {
 
         realEstateUploadData.id += `_${nextTokenId}`;
 
-        const [metadataCID, imageCID] =
+        let [metadataCID, imageCID] =
             await this.realEstateStorageService
                 .uploadFile(realEstateUploadData);
 
-        const tx = this.realEstateContract.connect(signer).mint(metadataCID);
-        await tx.wait();
+        this.realEstateContract.connect(signer).mint(metadataCID);
 
         return [metadataCID, imageCID];
     }

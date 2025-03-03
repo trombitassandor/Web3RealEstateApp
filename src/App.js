@@ -37,11 +37,6 @@ function App() {
     const provider =
       new ethers.providers.Web3Provider(window.ethereum);
 
-    console.log("provider =", provider);
-
-    const signer = await provider.getSigner();
-    console.log("signer =", signer);
-
     setProvider(provider);
 
     const network = await provider.getNetwork();
@@ -66,7 +61,7 @@ function App() {
     setRealEstateContract(realEstateContract);
 
     console.log("realEstateAddress =", realEstateAddress);
-    console.log("realEstateContract =", realEstateContract);
+    console.log("realEstate =", realEstateContract);
 
     const realEstateTotalSupply = await realEstateContract.totalSupply();
     console.log("realEstateTotalSupply =", realEstateTotalSupply.toString());
@@ -74,22 +69,11 @@ function App() {
     const allRealEstates = [];
 
     for (var tokenId = 1; tokenId <= realEstateTotalSupply; tokenId++) {
-      try {
-        const tokenURI = await realEstateContract.tokenURI(tokenId);
-        console.log("Fetching tokenURI=", tokenURI);
-        const response = await fetch(tokenURI);
-
-        if (!response.ok) {
-          console.error("Failed to fetch metadata for tokenId", tokenId, "from", tokenURI);
-          continue; // Skip this real estate item
-        }
-
-        const metadata = await response.json();
-        allRealEstates.push(metadata);
-      }
-      catch (error) {
-        console.error("Error fetching or parsing tokenURI for tokenId", tokenId, error);
-      }
+      const tokenURI = await realEstateContract.tokenURI(tokenId);
+      console.log("Fetching tokenURI=", tokenURI);
+      const response = await fetch(tokenURI);
+      const metadata = await response.json();
+      allRealEstates.push(metadata);
     }
     setAllReatEstates(allRealEstates);
     console.log(allRealEstates);
@@ -132,65 +116,63 @@ function App() {
 
   return (
 
-    <div>
-      <Navigation accountAddress={accountAddress} setAccountAddress={setAccountAddress} onClickSell={() => toggleSell(true)} />
-      <Search />
-      <div className='cards__section'>
-        <h3>Welcome to Web3RealEstateApp!</h3>
-        <hr />
-        <div className='cards'>
-          {
-            allRealEstates.map((realEstate, id) => (
-              <div className='card' key={id + 1} onClick={() => toggleRealEstate(realEstate, id + 1)}>
-                <div className='card__image'>
-                  <img src={RealEstateUtils.getImage(realEstate)} alt="RealEstate" />
-                </div>
-                <div className="card__info">
-                  <h4>
-                    {RealEstateUtils.getPurchasePrice(realEstate)}|
-                    {RealEstateUtils.getName(realEstate)}
-                  </h4>
-                  <h5>
+      <div>
+        <Navigation accountAddress={accountAddress} setAccountAddress={setAccountAddress} onClickSell={() => toggleSell(true)} />
+        <Search />
+        <div className='cards__section'>
+          <h3>Welcome to Web3RealEstateApp!</h3>
+          <hr />
+          <div className='cards'>
+            {
+              allRealEstates.map((realEstate, id) => (
+                <div className='card' key={id + 1} onClick={() => toggleRealEstate(realEstate, id + 1)}>
+                  <div className='card__image'>
+                    <img src={RealEstateUtils.getImage(realEstate)} alt="RealEstate" />
+                  </div>
+                  <div className="card__info">
+                    <h4>
+                      {RealEstateUtils.getPurchasePrice(realEstate)}|
+                      {RealEstateUtils.getName(realEstate)}
+                    </h4>
+                    <h5>
+                      <p>
+                        <strong>{RealEstateUtils.getYearBuilt(realEstate)} | </strong>
+                        <strong>{RealEstateUtils.getSquareMetre(realEstate)} | </strong>
+                        <strong>{RealEstateUtils.getBedrooms(realEstate)}</strong> bedrooms |
+                        <strong>{RealEstateUtils.getBathrooms(realEstate)}</strong> bathrooms
+                      </p>
+                    </h5>
                     <p>
-                      <strong>{RealEstateUtils.getYearBuilt(realEstate)} | </strong>
-                      <strong>{RealEstateUtils.getSquareMetre(realEstate)} | </strong>
-                      <strong>{RealEstateUtils.getBedrooms(realEstate)}</strong> bedrooms |
-                      <strong>{RealEstateUtils.getBathrooms(realEstate)}</strong> bathrooms
+                      <strong>Address | </strong>
+                      {RealEstateUtils.getAddress(realEstate)}
                     </p>
-                  </h5>
-                  <p>
-                    <strong>Address | </strong>
-                    {RealEstateUtils.getAddress(realEstate)}
-                  </p>
-                  <p>
-                    <strong>Description | </strong>
-                    {RealEstateUtils.getDescription(realEstate)}
-                  </p>
+                    <p>
+                      <strong>Description | </strong>
+                      {RealEstateUtils.getDescription(realEstate)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
-          }
+              ))
+            }
+          </div>
         </div>
+        {
+          realEstateToggle && <RealEstate
+            realEstate={currentRealEstate}
+            realEstateId={currentRealEstateId}
+            provider={provider}
+            accountAddress={accountAddress}
+            escrow={escrow}
+            onClose={toggleRealEstate}
+          />
+        }
+        {
+          sellToggle && <Sell
+            accountAddress={accountAddress}
+            realEstateContract={realEstateContract}
+            onClose={() => toggleSell(false)} />
+        }
       </div>
-      {
-        realEstateToggle && <RealEstate
-          realEstate={currentRealEstate}
-          realEstateId={currentRealEstateId}
-          provider={provider}
-          accountAddress={accountAddress}
-          escrow={escrow}
-          onClose={toggleRealEstate}
-        />
-      }
-      {
-        sellToggle && <Sell
-          accountAddress={accountAddress}
-          provider={provider}
-          realEstateContract={realEstateContract}
-          escrowContract={escrow}
-          onClose={() => toggleSell(false)} />
-      }
-    </div>
   );
 }
 

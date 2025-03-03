@@ -4,19 +4,10 @@ import Popup from "./Popup";
 import { usePopup } from '../PopupContext';
 
 import EthersUtils from "../utils/EthersUtils";
-//import RealEstateTokenFactoryFacade from "../utils/UploadAndMint/realEstateTokenFactoryFacade";
-import PinataUploader from "../utils/PinataUploader";
-//import { uploadAndMint } from "../utils/RealEstateService";
-import { Buffer } from 'buffer';
+import { uploadAndMint } from "../utils/RealEstateService";
 
-const Sell = ({
-    accountAddress,
-    provider,
-    realEstateContract,
-    escrowContract,
-    onClose }) => {
+const Sell = ({ accountAddress, realEstateContract, onClose }) => {
     console.log("seller account address =", accountAddress);
-    console.log("provider =", provider);
     console.log("realEstateContract =", realEstateContract);
 
     const [name, setName] = useState("");
@@ -101,17 +92,15 @@ const Sell = ({
             return;
         }
 
-        // const id = EthersUtils.getSlicedAccountAddress(accountAddress);
+        const id = EthersUtils.getSlicedAccountAddress(accountAddress);
 
-        // console.log("Start upload real estate");
-        // console.log("realEstateUploadData =", accountAddress, id, image, name, description, attributes);
+        console.log("Start upload real estate");
+        console.log("realEstateUploadData =", accountAddress, id, image, name, description, attributes);
 
         try {
-            // using backend
-            // await uploadAndMint(accountAddress, id, image, name, description, attributes);
-            await uploadAndMintRealEstate();
+            await uploadAndMint(accountAddress, id, image, name, description, attributes);
         }
-        catch (error) {
+        catch(error) {
             showGlobalPopup(error.message);
             return;
         }
@@ -121,81 +110,6 @@ const Sell = ({
         onClose(); // Close popup after submission
 
         showGlobalPopup("Real Estate Sell Submit");
-    };
-
-    const uploadAndMintRealEstate = async () => {
-        // const realEstateTokenFactory = RealEstateTokenFactoryFacade();
-
-        const signer = await provider.getSigner();
-        console.log("signer =", signer);
-
-        const nextRealEstateTokenId = await realEstateContract.nextTokenId();
-        const id =
-            `${EthersUtils.getSlicedAccountAddress(accountAddress)}
-            _${nextRealEstateTokenId}`;
-
-        console.log("signer =", signer);
-
-        console.log("upload and mint real estate START");
-        console.log(`signer.address = ${signer.address}
-            id = ${id}
-            image = ${image}
-            name = ${name}
-            address = ${address}
-            description = ${description}
-            attributes = ${attributes}`);
-
-        const pinataUploader = new PinataUploader();
-
-        // Upload image
-        let imageCID, imageURL = '';
-        if (image) {
-            const imageName = `${id}_image`;
-            imageCID = await pinataUploader.uploadFile(image, imageName);
-            imageURL = `https://gateway.pinata.cloud/ipfs/${imageCID}`;
-            console.log("imageCID = ", imageCID);
-            console.log("imageURL = ", imageURL);
-        }
-
-        // Create metadata
-        const metadata = {
-            name: name,
-            address: address,
-            description: description,
-            image: imageURL,
-            attributes: attributes,
-        };
-        console.log("metadata = ", metadata);
-
-        const metadataJson = JSON.stringify(metadata, null, 2);
-        console.log("Metadata object: ", metadataJson);
-
-        // Convert metadata to buffer and upload
-        // const metadataBuffer = Buffer.from(metadataJson);
-        // const metadataStream = streamifier.createReadStream(metadataBuffer);
-        const metadataBlob = new Blob([metadataJson], { type: 'application/json' });
-        const metadataFileName = `${id}_metadata.json`;
-        // const metadataCID = await pinataUploader
-        //     .uploadFile(metadataStream, metadataFileName);
-        const metadataCID = await pinataUploader
-            .uploadFile(metadataBlob, metadataFileName);
-        console.log('Metadata uploaded successfully. CID:', metadataCID);
-
-        const tokenURL = `https://gateway.pinata.cloud/ipfs/${metadataCID}`;
-
-        try {
-            let tx = await realEstateContract.connect(signer).mint(tokenURL);
-            await tx.wait();
-        } catch (error) {
-            console.error("Error realEstateContract mint:", error);
-        }
-
-        // const [metadataCID, imageCID] = 
-        //     await realEstateTokenFactory.uploadAndMint(signer, 
-        //         id, image, name, address, description, attributes);
-
-        console.log("upload and mint real estate END");
-        console.log(`metadataCID = ${metadataCID} \n imageCID = ${imageCID}`);
     };
 
     return (
