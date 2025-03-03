@@ -23,14 +23,14 @@ app.post("/upload-mint", upload.single('image'), async (req, res) => {
         console.log("Received file:", req.file);
 
         // Extract form data and file from the request
-        const { account, id, name, description, attributes } = req.body;
+        const { account, id, name, address, description, attributes } = req.body;
         const imageStream = req.file != null 
             ? Readable.from(req.file.buffer)
             : null;
 
         // Call uploadAndMint function with the image buffer
         const [metadataCID, imageCID] = await realEstateTokenFactoryFacade
-            .uploadAndMint(account, id, imageStream, name, description, attributes);
+            .uploadAndMint(account, id, imageStream, name, address, description, attributes);
 
         // Respond with metadataCID and imageCID
         res.json({ success: true, metadataCID, imageCID });

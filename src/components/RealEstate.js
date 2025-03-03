@@ -52,6 +52,9 @@ const RealEstate = ({ realEstate, realEstateId, provider, accountAddress, escrow
         const hasLended = await escrow.approval(realEstateId, lender);
         setHasLended(hasLended);
         console.log("hasLended =", hasLended);
+
+        const signer = await provider.getSigner();
+        console.log("signer =", signer);
     }
 
     const fetchOwner = async () => {
